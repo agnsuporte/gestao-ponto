@@ -1,3 +1,69 @@
-node_modules
+# --- PRISMA ---
+prisma/generated/
+prisma/migrations/.migrate/
+prisma/migrations/*/migration.sql-journal
+prisma/.cache/
+
+# --- NEXT.JS ---
+.next/
+out/
+build/
+dist/
+.next-static/
+.vercel/
+.vercel_build_output/
+
+# Turbopack / SWC / Cache
+.cache/
+.turbo/
+swc/.cache/
+
+# Next.js serverless traces
+.next/serverless/
+.next/trace/
+
+# --- NODE ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# --- ENVIRONMENT ---
 .env
-/lib/generated/prisma
+.env*.local
+*.env
+*.local
+
+# --- TYPESCRIPT ---
+*.tsbuildinfo
+
+# --- EDITORS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS FILES ---
+.DS_Store
+Thumbs.db
+
+# --- TESTING ---
+coverage/
+.playwright/
+test-results/
+cypress/videos/
+cypress/screenshots/
+
+# --- DOCKER ---
+docker-data/
+*.pid
+
+# --- MISC ---
+*.log
+*.tmp
+*.temp
+
