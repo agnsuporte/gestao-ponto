@@ -1,5 +1,5 @@
-[00:00:02.206] Server  WARN    ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
-[00:00:02.210] Server  ERROR   ⨯ The file "./middleware.ts" must export a function, either as a default export or as a named "middleware" export.
+[00:00:01.174] Server  WARN    ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:01.179] Server  ERROR   ⨯ The file "./middleware.ts" must export a function, either as a default export or as a named "middleware" export.
 This function is what Next.js runs for every request handled by this middleware.
 
 Why this happens:
@@ -11,5 +11,4 @@ To fix it:
 - Ensure this file has either a default or "middleware" function export.
 
 Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
-[00:00:02.535] Server  LOG     ✓ Ready in 1951ms
-[00:00:41.866] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:01.411] Server  LOG     ✓ Ready in 1103ms
