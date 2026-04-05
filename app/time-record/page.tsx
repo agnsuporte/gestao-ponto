@@ -13,7 +13,7 @@ import MonthlyStats from '@/components/MonthlyStats';
 import MonthYearSelector from '@/components/MonthYearSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateDailyWorkMinutes, calculateMonthlyStats } from '@/lib/WorkHoursUtils';
-import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
+// import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
 
 import { TimeRecord, TimeRecordField } from '@/types/timeRecord';
 
@@ -27,8 +27,11 @@ interface ClockMutationVariables {
 export default function Home(): React.JSX.Element {
   const queryClient = useQueryClient();
   const today: string = format(new Date(), 'yyyy-MM-dd');
+  
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
+  //const currentTime: string = format(new Date(), "HH:mm");
+  const [currentTime, setCurrentTime] = useState<string>(() => format(new Date(), "HH:mm"));
 
   const { data: todayRecord, isLoading: loadingToday } = useQuery<TimeRecord | null>({
     queryKey: ['todayRecord', today],
@@ -78,24 +81,26 @@ export default function Home(): React.JSX.Element {
     clockMutation.mutate({ field, time: now });
   };
 
-  //const currentTime: string = format(new Date(), "HH:mm");
-  const [currentTime, setCurrentTime] = useState<string>(() => format(new Date(), "HH:mm"));
+
   const currentDate: string = format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-  const monthLabel: string = format(new Date(), "MMMM 'de' yyyy", { locale: ptBR });
+  // const monthLabel: string = format(new Date(), "MMMM 'de' yyyy", { locale: ptBR });
+  // Criamos uma data fictícia (mês no JS começa em 0, por isso -1)
+  const specificMonth = new Date(2024, month - 1, 1);
+
+  const specificMonthLabel = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(specificMonth);
 
   const dailyStats = calculateDailyWorkMinutes(todayRecord);
 
-  const currentMonthRecords: TimeRecord[] = history.filter((record: TimeRecord): boolean => {
-    if (!record.date) return false;
-    const recordDate: Date = parseISO(record.date);
-    return isWithinInterval(recordDate, {
-      start: startOfMonth(new Date()),
-      end: endOfMonth(new Date())
-    });
-  });
+  // const currentMonthRecords: TimeRecord[] = history.filter((record: TimeRecord): boolean => {
+  //   if (!record.date) return false;
+  //   const recordDate: Date = parseISO(record.date);
+  //   return isWithinInterval(recordDate, {
+  //     start: startOfMonth(new Date()),
+  //     end: endOfMonth(new Date())
+  //   });
+  // });
 
-  const monthlyStats = calculateMonthlyStats(currentMonthRecords);
-
+  const monthlyStats = calculateMonthlyStats(history);
 
   useEffect(() => {
     // Cria um intervalo que roda a cada segundo (1000ms)
@@ -230,7 +235,7 @@ export default function Home(): React.JSX.Element {
                 <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
               </div>
             ) : (
-              <MonthlyStats stats={monthlyStats} monthLabel={monthLabel} />
+              <MonthlyStats stats={monthlyStats} monthLabel={specificMonthLabel} />
             )}
           </TabsContent>
         </Tabs>

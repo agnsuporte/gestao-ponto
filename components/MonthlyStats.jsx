@@ -25,6 +25,7 @@ function StatCard({ icon: Icon, label, value, subvalue, color = "slate" }) {
 }
 
 export default function MonthlyStats({ stats, monthLabel }) {
+
   const { totalMinutes = 0, totalOvertime = 0, daysWorked = 0 } = stats || {};
   
   // Calcular horas normais (total - extras)

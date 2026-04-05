@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Projects/NextJS/time-record/app/providers.tsx"],"sourcesContent":["\"use client\";\r\n\r\nimport { QueryClient, QueryClientProvider } from '@tanstack/react-query';\r\nimport { useState } from 'react';\r\n\r\nexport default function Providers({ children }: { children: React.ReactNode }) {\r\n  const [queryClient] = useState(() => new QueryClient());\r\n  \r\n  return (\r\n    <QueryClientProvider client={queryClient}>\r\n      {children}\r\n    </QueryClientProvider>\r\n  );\r\n}"],"names":[],"mappings":";;;;;AAEA;AAAA;AACA;;;AAHA;;;AAKe,SAAS,UAAU,EAAE,QAAQ,EAAiC;;IAC3E,MAAM,CAAC,YAAY,GAAG,IAAA,yKAAQ;8BAAC,IAAM,IAAI,+LAAW;;IAEpD,qBACE,6LAAC,gNAAmB;QAAC,QAAQ;kBAC1B;;;;;;AAGP;GARwB;KAAA"}},
-    {"offset": {"line": 42, "column": 0}, "map": {"version":3,"sources":["file:///C:/Projects/NextJS/time-record/providers/auth-provider.tsx"],"sourcesContent":["\"use client\"; // Obrigatório para usar Context\r\nimport { SessionProvider } from \"next-auth/react\";\r\n\r\nexport default function AuthProvider({ children }: { children: React.ReactNode }) {\r\n  return <SessionProvider>{children}</SessionProvider>;\r\n}\r\n"],"names":[],"mappings":";;;;;AACA;AADA,cAAc,gCAAgC;;;AAG/B,SAAS,aAAa,EAAE,QAAQ,EAAiC;IAC9E,qBAAO,6LAAC,oKAAe;kBAAE;;;;;;AAC3B;KAFwB"}}]
-}
