@@ -13,7 +13,7 @@ export default function DailyStats({ totalMinutes = 0, overtimeMinutes = 0 }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <Card className="bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0 shadow-xl overflow-hidden">
+      <Card className="bg-linear-to-br from-slate-800 to-slate-900 text-white border-0 shadow-xl overflow-hidden">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-slate-300">Horas Trabalhadas Hoje</h3>
@@ -35,8 +35,8 @@ export default function DailyStats({ totalMinutes = 0, overtimeMinutes = 0 }) {
               transition={{ duration: 0.5, ease: "easeOut" }}
               className={`h-full rounded-full ${
                 hasOvertime 
-                  ? 'bg-gradient-to-r from-emerald-500 to-amber-500' 
-                  : 'bg-gradient-to-r from-emerald-500 to-emerald-400'
+                  ? 'bg-linear-to-r from-emerald-500 to-amber-500' 
+                  : 'bg-linear-to-r from-emerald-500 to-emerald-400'
               }`}
             />
           </div>

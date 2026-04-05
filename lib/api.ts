@@ -1,15 +1,15 @@
 
 import { TimeRecord } from '@/types/timeRecord';
 
-const API_URL = '/api/time-records';
+const API_URL = '/api/time-record';
 
 export const api = {
-  auth: {
-    me: async (): Promise<{ email: string }> => {
-      // TODO: Implementar autenticação real (NextAuth, etc.)
-      return { email: 'user@example.com' };
-    }
-  },
+  // auth: {
+  //   me: async (): Promise<{ email: string }> => {
+  //     // TODO: Implementar autenticação real (NextAuth, etc.)
+  //     return { email: 'user@example.com' };
+  //   }
+  // },
   timeRecords: {
     filter: async (query: Partial<TimeRecord>): Promise<TimeRecord[]> => {
       const params = new URLSearchParams();
@@ -21,8 +21,15 @@ export const api = {
       return res.json();
     },
 
-    list: async (_sort: string, limit: number): Promise<TimeRecord[]> => {
-      const res = await fetch(`${API_URL}?limit=${limit}`);
+    list: async (_sort: string, limit: number, month?: number, year?: number): Promise<TimeRecord[]> => {
+      // Construindo a URL com os filtros
+      let url = `${API_URL}?limit=${limit}`;
+      
+      if (month) url += `&month=${month}`;
+      if (year) url += `&year=${year}`;
+      
+      // const res = await fetch(`${API_URL}?limit=${limit}`);
+      const res = await fetch(url);
       if (!res.ok) throw new Error('Erro ao listar registos');
       return res.json();
     },

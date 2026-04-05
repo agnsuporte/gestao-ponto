@@ -60,6 +60,8 @@ cypress/screenshots/
 
 # --- DOCKER ---
 docker-data/
+pgdatabase/
+*.yml
 *.pid
 
 # --- MISC ---

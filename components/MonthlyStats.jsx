@@ -36,6 +36,8 @@ export default function MonthlyStats({ stats, monthLabel }) {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4"
     >
+      
+
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-slate-800">Resumo - {monthLabel}</h2>
       </div>

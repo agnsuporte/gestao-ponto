@@ -13,13 +13,38 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const date = searchParams.get('date');
-  const limit = parseInt(searchParams.get('limit') || '100');
+  const specificDate = searchParams.get('date'); 
+  const month = searchParams.get('month');
+  const year = searchParams.get('year');
+  const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 100); // Segurança: limite máximo
 
   const where: Prisma.TimeRecordWhereInput = { 
     userId: session.user.id,
-    ...(date && { date }),
   };
+
+  // 1. Prioridade para Data Específica
+  if (specificDate) {
+    where.date = specificDate; 
+  } 
+  // 2. Se não houver data específica, tenta o filtro por Mês/Ano
+  else if (month && year) {
+    const m = parseInt(month);
+    const y = parseInt(year);
+
+    // Validação básica para evitar valores injetados inválidos
+    if (m >= 1 && m <= 12 && y > 2020) {
+      // Criamos as datas e convertemos para string ISO
+      // .toISOString() gera algo como "2024-03-01T00:00:00.000Z"
+      const startDate = new Date(y, m - 1, 1).toISOString();
+      const endDate = new Date(y, m, 0, 23, 59, 59, 999).toISOString();
+
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      };
+    }
+    
+  }  
   
   const records = await prisma.timeRecord.findMany({
     where,

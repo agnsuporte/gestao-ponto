@@ -1,6 +1,6 @@
-"use client";
+"use client"; //  Define este ficheiro como um Client Component
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -10,6 +10,7 @@ import TimeSection from '@/components/TimeSection';
 import HistoryCard from '@/components/HistoryCard';
 import DailyStats from '@/components/DailyStats';
 import MonthlyStats from '@/components/MonthlyStats';
+import MonthYearSelector from '@/components/MonthYearSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateDailyWorkMinutes, calculateMonthlyStats } from '@/lib/WorkHoursUtils';
 import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
@@ -26,11 +27,8 @@ interface ClockMutationVariables {
 export default function Home(): React.JSX.Element {
   const queryClient = useQueryClient();
   const today: string = format(new Date(), 'yyyy-MM-dd');
-  
-  // const { data: user } = useQuery<{ email: string }>({
-  //   queryKey: ['currentUser'],
-  //   queryFn: () => api.auth.me(),
-  // });
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
 
   const { data: todayRecord, isLoading: loadingToday } = useQuery<TimeRecord | null>({
     queryKey: ['todayRecord', today],
@@ -41,9 +39,9 @@ export default function Home(): React.JSX.Element {
   });
 
   const { data: history = [], isLoading: loadingHistory } = useQuery<TimeRecord[]>({
-    queryKey: ['timeHistory'],
+    queryKey: ['timeHistory', month, year],
     queryFn: async (): Promise<TimeRecord[]> => {
-      return api.timeRecords.list('-date', 100);
+      return api.timeRecords.list('-date', 100, month, year);
     },
   });
 
@@ -80,7 +78,8 @@ export default function Home(): React.JSX.Element {
     clockMutation.mutate({ field, time: now });
   };
 
-  const currentTime: string = format(new Date(), "HH:mm");
+  //const currentTime: string = format(new Date(), "HH:mm");
+  const [currentTime, setCurrentTime] = useState<string>(() => format(new Date(), "HH:mm"));
   const currentDate: string = format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR });
   const monthLabel: string = format(new Date(), "MMMM 'de' yyyy", { locale: ptBR });
 
@@ -98,8 +97,18 @@ export default function Home(): React.JSX.Element {
   const monthlyStats = calculateMonthlyStats(currentMonthRecords);
 
 
+  useEffect(() => {
+    // Cria um intervalo que roda a cada segundo (1000ms)
+    const timer = setInterval(() => {
+      setCurrentTime(format(new Date(), "HH:mm"));
+    }, 1000);
+
+    // Limpa o intervalo se o componente for destruído (evita memory leaks)
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
         <motion.div 
@@ -191,6 +200,12 @@ export default function Home(): React.JSX.Element {
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">
+            <MonthYearSelector 
+              month={month} 
+              year={year} 
+              onChange={(m, y) => { setMonth(m); setYear(y); }}  
+            />
+
             {loadingHistory ? (
               <div className="flex justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
