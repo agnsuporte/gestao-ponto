@@ -4,10 +4,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY . .
+RUN apt-get update -y && apt-get install -y openssl libssl-dev
 
-# Para imagens baseadas em Debian/Ubuntu (ex: node:slim, node:lts)
-RUN apt-get update -y && apt-get install -y openssl
+COPY . .
 
 RUN npx prisma generate
 
