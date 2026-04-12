@@ -81,7 +81,6 @@ export default function Home(): React.JSX.Element {
     clockMutation.mutate({ field, time: now });
   };
 
-
   const currentDate: string = format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR });
   // const monthLabel: string = format(new Date(), "MMMM 'de' yyyy", { locale: ptBR });
   // Criamos uma data fictícia (mês no JS começa em 0, por isso -1)
