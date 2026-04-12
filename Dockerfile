@@ -6,6 +6,9 @@ RUN npm install
 
 COPY . .
 
+# Para imagens baseadas em Debian/Ubuntu (ex: node:slim, node:lts)
+RUN apt-get update -y && apt-get install -y openssl
+
 RUN npx prisma generate
 
 RUN npm run build
