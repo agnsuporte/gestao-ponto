@@ -17,6 +17,13 @@ RUN apt-get update -y && apt-get install -y \
     openssl \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# OUTRA ALTERNATIVA (FUNCIONOU) 
+docker exec -u 0 -it stack-app-1 sh -c "apt-get update && apt-get install -y openssl libssl-dev"
+
+Gera novamente o cliente dentro do contentor:
+docker exec -it stack-app-1 npx prisma generate
+
 Use o código com cuidado.
 
 4. Configuração do schema.prisma
