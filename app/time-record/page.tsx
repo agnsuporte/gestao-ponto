@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Briefcase, Coffee, Sun, History, Loader2, BarChart3 } from 'lucide-react';
+import { Briefcase, Sun, History, Loader2, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TimeSection from '@/components/TimeSection';
 import HistoryCard from '@/components/HistoryCard';
@@ -90,15 +90,6 @@ export default function Home(): React.JSX.Element {
 
   const dailyStats = calculateDailyWorkMinutes(todayRecord);
 
-  // const currentMonthRecords: TimeRecord[] = history.filter((record: TimeRecord): boolean => {
-  //   if (!record.date) return false;
-  //   const recordDate: Date = parseISO(record.date);
-  //   return isWithinInterval(recordDate, {
-  //     start: startOfMonth(new Date()),
-  //     end: endOfMonth(new Date())
-  //   });
-  // });
-
   const monthlyStats = calculateMonthlyStats(history);
 
   useEffect(() => {
@@ -168,7 +159,7 @@ export default function Home(): React.JSX.Element {
                 />
 
                 <TimeSection
-                  title="Turno 1"
+                  title="Jornada 1"
                   icon={Briefcase}
                   entradaTime={todayRecord?.turno1_entrada}
                   saidaTime={todayRecord?.turno1_saida}
@@ -179,24 +170,13 @@ export default function Home(): React.JSX.Element {
                 />
 
                 <TimeSection
-                  title="Almoço"
-                  icon={Coffee}
-                  entradaTime={todayRecord?.almoco_entrada}
-                  saidaTime={todayRecord?.almoco_saida}
-                  onEntrada={() => handleClock('almoco_entrada')}
-                  onSaida={() => handleClock('almoco_saida')}
-                  entradaDisabled={!todayRecord?.turno1_saida || clockMutation.isPending}
-                  saidaDisabled={!todayRecord?.almoco_entrada || clockMutation.isPending}
-                />
-
-                <TimeSection
-                  title="Turno 2"
+                  title="Jornada 2"
                   icon={Sun}
                   entradaTime={todayRecord?.turno2_entrada}
                   saidaTime={todayRecord?.turno2_saida}
                   onEntrada={() => handleClock('turno2_entrada')}
                   onSaida={() => handleClock('turno2_saida')}
-                  entradaDisabled={!todayRecord?.almoco_saida || clockMutation.isPending}
+                  entradaDisabled={!todayRecord?.turno1_saida || clockMutation.isPending}
                   saidaDisabled={!todayRecord?.turno2_entrada || clockMutation.isPending}
                 />
               </>

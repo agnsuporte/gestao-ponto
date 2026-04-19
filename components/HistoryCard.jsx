@@ -61,17 +61,13 @@ export default function HistoryCard({ record, index }) {
           
           <div className="space-y-1">
             <TimeSlot 
-              label="Turno 1" 
+              label="Jornada 1" 
               entrada={record.turno1_entrada} 
               saida={record.turno1_saida} 
             />
+  
             <TimeSlot 
-              label="Almoço" 
-              entrada={record.almoco_entrada} 
-              saida={record.almoco_saida} 
-            />
-            <TimeSlot 
-              label="Turno 2" 
+              label="Jornada 2" 
               entrada={record.turno2_entrada} 
               saida={record.turno2_saida} 
             />
