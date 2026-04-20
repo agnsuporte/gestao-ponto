@@ -18,6 +18,7 @@ import { calculateDailyWorkMinutes, calculateMonthlyStats } from '@/lib/WorkHour
 import { TimeRecord, TimeRecordField } from '@/types/timeRecord';
 
 import { api } from '@/lib/api';
+import { LogoutButton } from '@/components/LogoutButton';
 
 interface ClockMutationVariables {
   field: TimeRecordField;
@@ -105,6 +106,11 @@ export default function Home(): React.JSX.Element {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
+        <div className="flex w-full p-4"> 
+          <div className="ml-auto">
+            <LogoutButton />
+          </div>
+        </div>
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}

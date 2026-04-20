@@ -50,3 +50,22 @@ Use o código com cuidado.
 
 Dica Extra: Se planeares atualizar para a versão 7.7.0 (como sugerido no teu log), lembra-te de atualizar tanto o pacote prisma como o @prisma/client no teu package.json.
 Precisas de ajuda para configurar o script de deploy automático com estas correções?
+
+# ---------------------------
+# DOCKERFILE
+# ---------------------------
+
+O que foi corrigido:
+
+a) Instalação no Runner: Adicionei o apt-get install -y openssl na fase final (runner). Sem isto, o ficheiro .so do Prisma não tem a biblioteca de suporte para correr.
+b) Limpeza de Cache: Usei rm -rf /var/lib/apt/lists/* para manter a imagem leve.
+c) Comando de Arranque: Alterei o CMD para correr as migrações automaticamente antes de iniciar a app. Isso evita que a app quebre se adicionares campos novos à base de dados.
+
+Como aplicar agora:
+
+Basta correr docker-compose up --build -d app.
+
+Sempre que fizeres grandes alterações no código, lembra-te da sequência:
+docker compose build app
+docker compose up -d
+Precisas de ajuda com 
