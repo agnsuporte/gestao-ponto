@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   // Define a URL base para resolver caminhos relativos de imagens e links
-  metadataBase: new URL('https://seusite.com.br'),
+  metadataBase: new URL('https://alegomes.eu'),
   
   // O título que aparece na aba do navegador e no Google
   title: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
 
   // Configurações para Redes Sociais (Open Graph)
   openGraph: {
-    title: 'Título para Compartilhamento',
-    description: 'Descrição específica para Facebook/WhatsApp/LinkedIn',
-    url: 'https://seusite.com.br',
-    siteName: 'Minha Marca',
+    title: 'Ponto Inteligente',
+    description: 'Registo simples e fiável da jornada de trabalho.',
+    url: 'https://alegomes.eu',
+    siteName: 'Ponto Inteligente',
     images: [
       {
         url: '/og-image.jpg', // Caminho da imagem na pasta public

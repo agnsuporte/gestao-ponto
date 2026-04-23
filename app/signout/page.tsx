@@ -1,9 +1,22 @@
 "use client";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SignOutPage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSignOut = async () => {
+    setIsSubmitting(true);
+
+    const result = await signOut({
+      redirect: false,
+      callbackUrl: `${window.location.origin}/`,
+    });
+
+    window.location.assign(result?.url ?? "/");
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50">
@@ -20,13 +33,15 @@ export default function SignOutPage() {
 
         <div className="mt-8 flex flex-col gap-3">
           <button
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={handleSignOut}
+            disabled={isSubmitting}
             className="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition-all"
           >
-            Sim, sair agora
+            {isSubmitting ? "A sair..." : "Sim, sair agora"}
           </button>
           <button
             onClick={() => router.back()}
+            disabled={isSubmitting}
             className="w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all"
           >
             Cancelar
