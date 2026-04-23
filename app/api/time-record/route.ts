@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { getMonthDateRange, parseTimeRecordInput, withCalculatedTotals } from '@/lib/time-record';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -30,20 +31,14 @@ export async function GET(request: NextRequest) {
   else if (month && year) {
     const m = parseInt(month);
     const y = parseInt(year);
+    const range = getMonthDateRange(y, m);
 
-    // Validação básica para evitar valores injetados inválidos
-    if (m >= 1 && m <= 12 && y > 2020) {
-      // Criamos as datas e convertemos para string ISO
-      // .toISOString() gera algo como "2024-03-01T00:00:00.000Z"
-      const startDate = new Date(y, m - 1, 1).toISOString();
-      const endDate = new Date(y, m, 0, 23, 59, 59, 999).toISOString();
-
+    if (range) {
       where.date = {
-        gte: startDate,
-        lte: endDate,
+        gte: range.startDate,
+        lte: range.endDate,
       };
     }
-    
   }  
   
   const records = await prisma.timeRecord.findMany({
@@ -63,11 +58,42 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
+    const input = parseTimeRecordInput(await request.json());
+
+    if (!input.date) {
+      return NextResponse.json({ error: 'Data inválida' }, { status: 400 });
+    }
+
+    const existingRecord = await prisma.timeRecord.findFirst({
+      where: {
+        userId: session.user.id,
+        date: input.date,
+      },
+    });
+
+    if (existingRecord) {
+      const data: Prisma.TimeRecordUpdateInput = {
+        ...input,
+        ...withCalculatedTotals({
+          ...existingRecord,
+          ...input,
+        }),
+      };
+
+      const record = await prisma.timeRecord.update({
+        where: { id: existingRecord.id },
+        data,
+      });
+
+      return NextResponse.json(record);
+    }
+
     const data: Prisma.TimeRecordCreateInput = {
-      ...body,
+      ...input,
+      ...withCalculatedTotals(input),
       user: { connect: { id: session.user.id } },
     };
+
     const record = await prisma.timeRecord.create({ data });
     return NextResponse.json(record, { status: 201 });
   } catch (err) {

@@ -51,25 +51,11 @@ export default function Home(): React.JSX.Element {
 
   const clockMutation = useMutation<TimeRecord, Error, ClockMutationVariables>({
     mutationFn: async ({ field, time }: ClockMutationVariables): Promise<TimeRecord> => {
-      let updatedRecord: Partial<TimeRecord>;
-      
       if (todayRecord?.id) {
-        updatedRecord = { ...todayRecord, [field]: time };
-        await api.timeRecords.update(todayRecord.id, { [field]: time });
-      } else {
-        updatedRecord = { date: today, [field]: time };
-        await api.timeRecords.create(updatedRecord);
+        return api.timeRecords.update(todayRecord.id, { [field]: time });
       }
-      
-      const { total, overtime } = calculateDailyWorkMinutes(updatedRecord as TimeRecord);
-      if (todayRecord?.id) {
-        await api.timeRecords.update(todayRecord.id, { 
-          total_minutes: total, 
-          overtime_minutes: overtime 
-        });
-      }
-      
-      return updatedRecord as TimeRecord;
+
+      return api.timeRecords.create({ date: today, [field]: time });
     },
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ['todayRecord'] });

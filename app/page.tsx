@@ -163,10 +163,10 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/time-record">
+              <Link href="/login">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg">
                   <Clock className="w-5 h-5 mr-2" />
-                  Aceder ao Ponto
+                  Entrar na Plataforma
                 </Button>
               </Link>
              
@@ -223,18 +223,18 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-              Conforme a Legislação Portuguesa
+              Pensado para a rotina de trabalho em Portugal
             </h2>
             <p className="text-slate-300 mb-6">
-              Sistema desenvolvido seguindo as normas do Código do Trabalho português, 
-              incluindo cálculo automático de horas extras com as taxas corretas.
+              Sistema focado em registo diário, histórico e leitura rápida das horas
+              trabalhadas, com regras base alinhadas com jornadas comuns em Portugal.
             </p>
             <ul className="space-y-4">
               {[
-                'Período normal: 8h/dia, 40h/semana',
-                'Primeiras 2h extras: +25%',
-                'Horas seguintes: +37.5%',
-                'Dias de descanso: +50%'
+                'Base diária de 8h e referência semanal de 40h',
+                'Separação clara entre períodos de trabalho',
+                'Resumo automático do total diário e mensal',
+                'Histórico simples para conferência e acompanhamento'
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-slate-300">
                   <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
@@ -287,10 +287,10 @@ export default function Home() {
           <p className="text-xl text-slate-300 mb-8">
             Faça login e comece a gerir o seu tempo de forma inteligente.
           </p>
-          <Link href="/time-record">
+          <Link href="/login">
             <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-6 text-lg">
               <Users className="w-5 h-5 mr-2" />
-              Aceder Agora
+              Fazer Login
             </Button>
           </Link>
         </motion.div>
@@ -299,7 +299,7 @@ export default function Home() {
       {/* Footer */}
       <div className="border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-8 text-center text-slate-400 text-sm">
-          <p>© 2026 Controle de Ponto. Sistema conforme legislação portuguesa.</p>
+          <p>© 2026 Controle de Ponto. Registo simples e fiável da jornada de trabalho.</p>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Calendar, Clock, TrendingUp, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
-import { formatMinutesToTime, OVERTIME_RATES } from '../lib/WorkHoursUtils';
+import { formatMinutesToTime } from '../lib/WorkHoursUtils';
 
 function StatCard({ icon: Icon, label, value, subvalue, color = "slate" }) {
   const colorClasses = {
@@ -74,14 +74,13 @@ export default function MonthlyStats({ stats, monthLabel }) {
         />
       </div>
 
-      {/* Info sobre legislação */}
+      {/* Nota informativa sobre a interpretação atual do resumo */}
       <Card className="bg-blue-50 border-blue-100 p-4">
-        <h4 className="font-medium text-blue-800 mb-2 text-sm">📋 Legislação Portuguesa</h4>
+        <h4 className="font-medium text-blue-800 mb-2 text-sm">Resumo atual</h4>
         <ul className="text-xs text-blue-700 space-y-1">
-          <li>• Período normal: 8h/dia, 40h/semana</li>
-          <li>• Primeiras 2h extras: +{OVERTIME_RATES.first_two_hours * 100}%</li>
-          <li>• Horas seguintes: +{OVERTIME_RATES.additional_hours * 100}%</li>
-          <li>• Dias de descanso: +{OVERTIME_RATES.rest_days * 100}%</li>
+          <li>• O total considera os dois períodos de trabalho registados no dia</li>
+          <li>• O resumo de horas extra mostra o excedente acima das 8h diárias</li>
+          <li>• Este painel é informativo e não substitui regras laborais específicas</li>
         </ul>
       </Card>
     </motion.div>
