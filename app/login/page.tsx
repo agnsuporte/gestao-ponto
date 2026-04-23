@@ -2,11 +2,9 @@
 
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,13 +20,14 @@ export default function LoginPage() {
       email,
       password,
       redirect: false,
+      callbackUrl: '/time-record',
     });
 
     if (result?.error) {
       setError('Email ou password incorretos');
       setIsLoading(false);
     } else {
-      router.push('/time-record');
+      window.location.assign(result?.url ?? '/time-record');
     }
   };
 
@@ -41,7 +40,11 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
 
-    const result = await signIn('email', { email, redirect: false });
+    const result = await signIn('email', {
+      email,
+      redirect: false,
+      callbackUrl: '/time-record',
+    });
     
     setIsLoading(false);
     if (result?.error) {

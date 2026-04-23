@@ -57,9 +57,19 @@ Precisas de ajuda para configurar o script de deploy automático com estas corre
 
 O que foi corrigido:
 
-a) Instalação no Runner: Adicionei o apt-get install -y openssl na fase final (runner). Sem isto, o ficheiro .so do Prisma não tem a biblioteca de suporte para correr.
-b) Limpeza de Cache: Usei rm -rf /var/lib/apt/lists/* para manter a imagem leve.
-c) Comando de Arranque: Alterei o CMD para correr as migrações automaticamente antes de iniciar a app. Isso evita que a app quebre se adicionares campos novos à base de dados.
+a) Instalação no Runner: 
+
+  Adicionei o apt-get install -y openssl na fase final (runner). Sem isto, o 
+  ficheiro .so do Prisma não tem a biblioteca de suporte para correr.
+
+b) Limpeza de Cache: 
+  
+  Usei rm -rf /var/lib/apt/lists/* para manter a imagem leve.
+
+c) Comando de Arranque: 
+  
+  Alterei o CMD para correr as migrações automaticamente antes de iniciar a app. 
+  Isso evita que a app quebre se adicionares campos novos à base de dados.
 
 Como aplicar agora:
 
