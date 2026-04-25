@@ -1,12 +1,12 @@
 export interface TimeRecord {
   id?: string;
   date: string;
-  turno1_entrada?: string;
-  turno1_saida?: string;
-  almoco_entrada?: string;
-  almoco_saida?: string;
-  turno2_entrada?: string;
-  turno2_saida?: string;
+  turno1_entrada?: string | null;
+  turno1_saida?: string | null;
+  almoco_entrada?: string | null;
+  almoco_saida?: string | null;
+  turno2_entrada?: string | null;
+  turno2_saida?: string | null;
   total_minutes?: number;
   overtime_minutes?: number;
   created_by?: string;

@@ -4,39 +4,35 @@ import { Providers, AuthProvider} from './providers';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  // Define a URL base para resolver caminhos relativos de imagens e links
   metadataBase: new URL('https://alegomes.eu'),
-  
-  // O título que aparece na aba do navegador e no Google
   title: {
     default: 'Ponto Inteligente',
-    template: '%s | AGdNascimento', // Adiciona o sufixo em outras páginas
+    template: '%s | Ponto Inteligente',
   },
-  
-  // Resumo do conteúdo (ideal entre 150-160 caracteres)
-  description: 'Acompanhe o seu tempo, horas extras e produtividade em tempo real..',
-  
-  // Palavras-chave relevantes (uso moderado)
+  description: 'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
   keywords: ['trabalho', 'tempo', 'ponto', 'produtividade', 'gestão de tempo'],
-
-  // Configurações para Redes Sociais (Open Graph)
   openGraph: {
     title: 'Ponto Inteligente',
-    description: 'Registo simples e fiável da jornada de trabalho.',
+    description: 'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
     url: 'https://alegomes.eu',
     siteName: 'Ponto Inteligente',
     images: [
       {
-        url: '/og-image.jpg', // Caminho da imagem na pasta public
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
+        alt: 'Ponto Inteligente',
       },
     ],
-    locale: 'pt_BR',
+    locale: 'pt_PT',
     type: 'website',
   },
-
-  // Instruções para robôs de busca (Google, Bing)
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ponto Inteligente',
+    description: 'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
+    images: ['/opengraph-image'],
+  },
   robots: {
     index: true,
     follow: true,
@@ -55,9 +51,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ptBR">
-      <body
-      >
+    <html lang="pt-PT">
+      <body>
        <AuthProvider> <Providers>{children}</Providers> </AuthProvider>
       </body>
     </html>

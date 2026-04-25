@@ -23,6 +23,19 @@ export type TimeRecordMutationInput = Partial<
   >
 >;
 
+type TimeRecordCalculationInput = Partial<
+  Pick<
+    TimeRecord,
+    | 'date'
+    | 'turno1_entrada'
+    | 'turno1_saida'
+    | 'almoco_entrada'
+    | 'almoco_saida'
+    | 'turno2_entrada'
+    | 'turno2_saida'
+  >
+>;
+
 const MUTABLE_FIELDS: MutableTimeRecordField[] = [
   'date',
   'turno1_entrada',
@@ -82,7 +95,7 @@ export function parseTimeRecordInput(payload: unknown): TimeRecordMutationInput 
   return parsed;
 }
 
-export function withCalculatedTotals(record: TimeRecordMutationInput): Pick<TimeRecord, 'total_minutes' | 'overtime_minutes'> {
+export function withCalculatedTotals(record: TimeRecordCalculationInput): Pick<TimeRecord, 'total_minutes' | 'overtime_minutes'> {
   const totals = calculateDailyWorkMinutes(record as TimeRecord);
 
   return {

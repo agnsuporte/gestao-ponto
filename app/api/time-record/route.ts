@@ -89,7 +89,13 @@ export async function POST(request: NextRequest) {
     }
 
     const data: Prisma.TimeRecordCreateInput = {
-      ...input,
+      date: input.date,
+      turno1_entrada: input.turno1_entrada,
+      turno1_saida: input.turno1_saida,
+      almoco_entrada: input.almoco_entrada,
+      almoco_saida: input.almoco_saida,
+      turno2_entrada: input.turno2_entrada,
+      turno2_saida: input.turno2_saida,
       ...withCalculatedTotals(input),
       user: { connect: { id: session.user.id } },
     };

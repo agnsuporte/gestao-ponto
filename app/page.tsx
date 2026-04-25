@@ -1,306 +1,494 @@
 "use client";
 
-// import { useSession } from "next-auth/react";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { CheckCircle, Clock, TrendingUp, Zap } from "lucide-react";
-// import Link from "next/link";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  BadgeCheck,
+  CalendarRange,
+  CheckCircle2,
+  Clock3,
+  Euro,
+  HeartHandshake,
+  LineChart,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
-// export default  function HomePage() {
-  
-//   function AuthButton() {
-//     const { data: session, status } = useSession();
+import { StripeCheckoutButton } from "@/components/billing/stripe-checkout-button";
+import { DonationCheckoutForm } from "@/components/billing/donation-checkout-form";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
-//     if (status === "loading") return <Button>A carregar...</Button>;
+const highlights = [
+  "Pensado para pequenas equipas e negócios em Portugal",
+  "Registo diário simples, com histórico e resumo mensal",
+  "Acesso online sem folhas Excel confusas",
+];
 
-//     return session ? (
-//       <Link href="/api/auth/signout">
-//         <Button>Sair</Button>
-//       </Link>
-//     ) : (
-//       <Link href="/api/auth/signin">
-//         <Button>Aceder</Button>
-//       </Link>
-//     );
-//   }
+const steps = [
+  {
+    title: "Criar conta",
+    description: "Comece em minutos e deixe a equipa pronta para registar a jornada.",
+    icon: Users,
+  },
+  {
+    title: "Registar o dia",
+    description: "Marque entradas e saídas com rapidez, no computador ou no telemóvel.",
+    icon: Clock3,
+  },
+  {
+    title: "Consultar o resumo",
+    description: "Veja histórico, totais e horas extra sem contas manuais.",
+    icon: LineChart,
+  },
+];
 
-//   return (
-//     <div className="w-full min-h-screen bg-slate-50 text-slate-900">
-//       {/* Header */}
-//       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-slate-200">
-//         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-//           <div className="flex items-center gap-2">
-//             <Clock className="w-6 h-6 text-blue-600" />
-//             <span className="text-xl font-bold">TimeSheet PT</span>
-//           </div>
-//           <nav className="flex items-center gap-4">
-//             <AuthButton/>
-//           </nav>
-//         </div>
-//       </header>
+const pricingPlans = [
+  {
+    key: "solo" as const,
+    name: "Solo",
+    price: "€3",
+    cadence: "/mês",
+    description: "Para profissionais independentes que querem registar e consultar o tempo com clareza.",
+    cta: "Subscrever",
+    accent: "slate",
+    features: [
+      "Registo diário de entradas e saídas",
+      "Histórico mensal simples",
+      "Resumo de horas trabalhadas",
+      "Acesso online",
+    ],
+  },
+  {
+    key: "equipa" as const,
+    name: "Equipa",
+    price: "€9",
+    cadence: "/mês",
+    description: "Até 5 utilizadores, ideal para pequenas equipas que precisam de simplicidade.",
+    cta: "Subscrever",
+    accent: "blue",
+    featured: true,
+    features: [
+      "Tudo no plano Solo",
+      "Até 5 utilizadores",
+      "Acompanhamento da equipa",
+      "Leitura rápida do histórico",
+    ],
+  },
+  {
+    key: "piloto" as const,
+    name: "Piloto Assistido",
+    price: "€21",
+    cadence: "/mês",
+    description: "Para os primeiros clientes que querem apoio próximo na configuração e adoção.",
+    cta: "Subscrever",
+    accent: "emerald",
+    features: [
+      "Tudo no plano Equipa",
+      "Acompanhamento mais próximo",
+      "Apoio inicial na adoção",
+      "Ideal para beta pago",
+    ],
+  },
+];
 
-//       <main>
-//         {/* Hero Section */}
-//         <section className="relative pt-32 pb-20 text-center bg-white">
-//           <div className="container mx-auto px-6">
-//             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-1 text-sm font-medium text-blue-700">
-//               <Zap className="w-4 h-4" />
-//               <span>Gestão de Tempo Inteligente</span>
-//             </div>
-//             <h1 className="text-5xl md:text-7xl font-extrabold mb-4">
-//               Controle as suas horas, <br />
-//               <span className="text-blue-600">maximize a sua produtividade.</span>
-//             </h1>
-//             <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-8">
-//               A nossa ferramenta simplifica o registo de horas de trabalho, calcula horas extras automaticamente e fornece relatórios detalhados, tudo em conformidade com a Lei.
-//             </p>
-//             <div className="flex justify-center gap-4">
-//               <Link href="/time-record">
-//                 <Button size="lg">Começar Agora</Button>
-//               </Link>
-//               <Link href="#features">
-//                 <Button size="lg" variant="outline">
-//                   Saber Mais
-//                 </Button>
-//               </Link>
-//             </div>
-//           </div>
-//         </section>
+const faqs = [
+  {
+    question: "Para quem é o Ponto Inteligente?",
+    answer:
+      "Foi pensado para profissionais independentes, microempresas e pequenas equipas que querem controlar a jornada sem complicação.",
+  },
+  {
+    question: "Funciona bem para pequenas equipas?",
+    answer:
+      "Sim. A proposta atual é precisamente servir equipas pequenas com um fluxo simples, rápido e fácil de acompanhar.",
+  },
+  {
+    question: "Calcula horas extra?",
+    answer:
+      "Sim, o sistema apresenta o excedente acima da base diária configurada no resumo. Regras laborais específicas devem ser validadas no contexto de cada empresa.",
+  },
+  {
+    question: "Posso começar já?",
+    answer:
+      "Sim. Já pode criar conta e começar a usar a plataforma, enquanto a oferta comercial continua a evoluir.",
+  },
+];
 
-//         {/* Features Section */}
-//         <section id="features" className="py-20 bg-slate-50">
-//           <div className="container mx-auto px-6">
-//             <div className="text-center mb-12">
-//               <h2 className="text-4xl font-bold mb-2">Funcionalidades Principais</h2>
-//               <p className="text-slate-600">Tudo o que precisa para uma gestão de tempo eficiente.</p>
-//             </div>
-//             <div className="grid md:grid-cols-3 gap-8">
-//               <Card>
-//                 <CardHeader>
-//                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-//                     <Clock className="w-6 h-6 text-blue-600" />
-//                   </div>
-//                   <CardTitle>Registo de Ponto Simples</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <p>Marque as suas entradas e saídas com apenas um clique. Interface rápida e intuitiva.</p>
-//                 </CardContent>
-//               </Card>
-//               <Card>
-//                 <CardHeader>
-//                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-//                     <TrendingUp className="w-6 h-6 text-blue-600" />
-//                   </div>
-//                   <CardTitle>Cálculo de Horas Extras</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <p>Cálculo automático de horas extraordinárias segundo o Código do Trabalho.</p>
-//                 </CardContent>
-//               </Card>
-//               <Card>
-//                 <CardHeader>
-//                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-//                     <CheckCircle className="w-6 h-6 text-blue-600" />
-//                   </div>
-//                   <CardTitle>Conformidade Legal</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <p>Garantimos que os cálculos estão de acordo com a legislação para evitar surpresas.</p>
-//                 </CardContent>
-//               </Card>
-//             </div>
-//           </div>
-//         </section>
-//       </main>
-
-//       {/* Footer */}
-//       <footer className="py-8 bg-slate-100 border-t border-slate-200">
-//         <div className="container mx-auto px-6 text-center text-slate-500">
-//           <p>&copy; {new Date().getFullYear()} TimeSheet PT. Todos os direitos reservados.</p>
-//         </div>
-//       </footer>
-//     </div>
-//   );
-// }
-
-
-import  Link from 'next/link';
-// import { createPageUrl } from '../utils';
-import { Clock, TrendingUp, Calendar, Shield, Zap, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { motion } from 'framer-motion';
+function AccentDot() {
+  return <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />;
+}
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-br from-blue-600/20 to-purple-600/20" />
-        
-        <div className="relative max-w-6xl mx-auto px-4 py-20 sm:py-32">
+    <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.22),transparent_35%),linear-gradient(180deg,#07111f_0%,#0f172a_45%,#111827_100%)] text-white">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+        <motion.header
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 to-emerald-400 shadow-lg shadow-blue-950/30">
+              <Clock3 className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold tracking-[0.18em] text-slate-200 uppercase">
+                Ponto Inteligente
+              </p>
+              <p className="text-xs text-slate-400">alegomes.eu</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link href="#pricing" className="hidden text-sm text-slate-300 transition hover:text-white sm:inline">
+              Ver preços
+            </Link>
+            <Link href="/login">
+              <Button className="rounded-full bg-white text-slate-900 hover:bg-slate-100">
+                Entrar
+              </Button>
+            </Link>
+          </div>
+        </motion.header>
+
+        <section className="relative py-18 sm:py-24">
+          <div className="pointer-events-none absolute inset-x-0 top-10 -z-10 h-72 bg-[radial-gradient(circle,rgba(16,185,129,0.16),transparent_55%)] blur-2xl" />
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
+            transition={{ duration: 0.55 }}
+            className="grid items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]"
           >
-            <div className="inline-flex items-center gap-2 bg-blue-500/10 text-blue-400 px-4 py-2 rounded-full mb-6 border border-blue-500/20">
-              <Zap className="w-4 h-4" />
-              <span className="text-sm font-medium">Gestão de Tempo Simplificada</span>
+            <div>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">
+                <AccentDot />
+                Beta pago para pequenas equipas em Portugal
+              </div>
+
+              <h1 className="max-w-3xl text-5xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">
+                Controle de ponto simples
+                <span className="block bg-linear-to-r from-blue-300 via-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+                  para equipas pequenas.
+                </span>
+              </h1>
+
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+                Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.
+                Registe entradas e saídas, consulte o histórico e acompanhe o resumo mensal sem complicação.
+              </p>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="#pricing">
+                  <Button size="lg" className="min-w-48 rounded-full bg-blue-600 px-8 text-white hover:bg-blue-500">
+                    <Euro className="mr-2 h-5 w-5" />
+                    Ver preços
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="min-w-48 rounded-full border-white/15 bg-white/5 px-8 text-white hover:bg-white/10 hover:text-white"
+                  >
+                    Criar conta
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="mt-10 grid gap-3 sm:grid-cols-3">
+                {highlights.map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm leading-6 text-slate-200 backdrop-blur"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <h1 className="text-5xl sm:text-7xl font-bold text-white mb-6">
-              Controle de Ponto
-              <span className="block text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 mt-2 mb-2">
-                Inteligente
-              </span>
-            </h1>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="relative"
+            >
+              <div className="absolute -left-10 top-12 hidden h-24 w-24 rounded-full bg-blue-500/20 blur-2xl lg:block" />
+              <div className="absolute -right-8 bottom-10 hidden h-32 w-32 rounded-full bg-emerald-400/15 blur-2xl lg:block" />
 
-            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              Registe as suas horas de trabalho de forma simples e eficiente. 
-              Acompanhe o seu tempo, horas extras e produtividade em tempo real.
+              <Card className="overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/55 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur">
+                <div className="flex items-center justify-between border-b border-white/10 pb-5">
+                  <div>
+                    <p className="text-sm text-slate-400">Resumo da equipa</p>
+                    <h2 className="mt-1 text-2xl font-semibold text-white">Visão rápida da jornada</h2>
+                  </div>
+                  <BadgeCheck className="h-8 w-8 text-emerald-300" />
+                </div>
+
+                <div className="grid gap-4 py-6 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-4">
+                    <p className="text-sm text-blue-200">Horas registadas</p>
+                    <p className="mt-2 text-3xl font-semibold text-white">168h</p>
+                    <p className="mt-1 text-xs text-blue-100/80">exemplo mensal</p>
+                  </div>
+                  <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4">
+                    <p className="text-sm text-amber-100">Horas extra</p>
+                    <p className="mt-2 text-3xl font-semibold text-white">12h</p>
+                    <p className="mt-1 text-xs text-amber-100/80">leitura rápida</p>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+                    <p className="text-sm text-emerald-100">Dias acompanhados</p>
+                    <p className="mt-2 text-3xl font-semibold text-white">21</p>
+                    <p className="mt-1 text-xs text-emerald-100/80">dados de exemplo</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {[
+                    ["Registo rápido", "Entradas e saídas com poucos cliques"],
+                    ["Histórico claro", "Conferência simples por dia e por mês"],
+                    ["Leitura imediata", "Resumo visual sem depender de folhas de cálculo"],
+                  ].map(([title, description]) => (
+                    <div
+                      key={title}
+                      className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/5 px-4 py-4"
+                    >
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-300" />
+                      <div>
+                        <p className="font-medium text-white">{title}</p>
+                        <p className="text-sm text-slate-400">{description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </section>
+
+        <section className="py-10">
+          <div className="grid gap-5 md:grid-cols-3">
+            {steps.map(({ title, description, icon: Icon }, index) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500/25 to-emerald-400/25">
+                    <Icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="mt-5 text-xl font-semibold text-white">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">{description}</p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        <section id="pricing" className="py-20">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-200">Preços</p>
+            <h2 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
+              Planos simples para começar com clareza.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-300">
+              Escolha o plano que melhor se adapta ao ritmo da sua atividade e comece a registar a jornada
+              sem complicação.
             </p>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/login">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg">
-                  <Clock className="w-5 h-5 mr-2" />
-                  Entrar na Plataforma
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {pricingPlans.map((plan, index) => {
+              const accentClasses =
+                plan.accent === "blue"
+                  ? "border-blue-400/40 bg-blue-500/10"
+                  : plan.accent === "emerald"
+                    ? "border-emerald-400/35 bg-emerald-400/10"
+                    : "border-white/10 bg-white/5";
+
+              return (
+                <motion.div
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: index * 0.07 }}
+                  viewport={{ once: true }}
+                >
+                  <Card
+                    className={`relative h-full rounded-[2rem] border p-7 backdrop-blur ${accentClasses} ${
+                      plan.featured ? "shadow-2xl shadow-blue-950/40" : ""
+                    }`}
+                  >
+                    {plan.featured ? (
+                      <div className="absolute right-5 top-5 rounded-full bg-blue-400 px-3 py-1 text-xs font-semibold text-slate-950">
+                        Mais indicado
+                      </div>
+                    ) : null}
+
+                    <p className="text-sm uppercase tracking-[0.2em] text-slate-300">{plan.name}</p>
+                    <div className="mt-5 flex items-end gap-1">
+                      <span className="text-5xl font-semibold text-white">{plan.price}</span>
+                      <span className="pb-2 text-slate-300">{plan.cadence}</span>
+                    </div>
+                    <p className="mt-4 min-h-18 text-sm leading-7 text-slate-300">{plan.description}</p>
+
+                    <ul className="mt-6 space-y-3">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-3 text-sm text-slate-200">
+                          <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-300" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-8 block">
+                      <StripeCheckoutButton
+                        kind="subscription"
+                        plan={plan.key}
+                        requireAuth
+                        className={`w-full rounded-full ${
+                          plan.featured
+                            ? "bg-blue-500 text-white hover:bg-blue-400"
+                            : "bg-white text-slate-900 hover:bg-slate-100"
+                        }`}
+                      >
+                        {plan.cta}
+                      </StripeCheckoutButton>
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="py-8">
+          <Card className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/10 p-8 backdrop-blur">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 text-emerald-200">
+                  <HeartHandshake className="h-5 w-5" />
+                  <span className="text-sm font-medium uppercase tracking-[0.2em]">Apoiar o projeto</span>
+                </div>
+                <h2 className="mt-4 text-3xl font-semibold text-white">Quer ajudar a manter o Ponto Inteligente vivo?</h2>
+                <p className="mt-4 text-sm leading-7 text-emerald-50/90">
+                  A doação é opcional e faz sentido como apoio ao projeto, para ajudar na evolução do produto,
+                  melhorias contínuas e novos recursos ao longo do tempo.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {[5, 10, 20].map((amount) => (
+                  <StripeCheckoutButton
+                    key={amount}
+                    kind="donation"
+                    amount={amount}
+                    className="rounded-full bg-white text-emerald-900 hover:bg-emerald-50"
+                  >
+                    Doar €{amount}
+                  </StripeCheckoutButton>
+                ))}
+                <DonationCheckoutForm />
+              </div>
+            </div>
+          </Card>
+        </section>
+
+        <section className="py-10">
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <motion.div
+              initial={{ opacity: 0, x: -18 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.45 }}
+              viewport={{ once: true }}
+              className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur"
+            >
+              <p className="text-sm font-medium uppercase tracking-[0.2em] text-blue-200">O que já resolve</p>
+              <h2 className="mt-4 text-3xl font-semibold text-white">Tudo o que precisa para começar sem confusão.</h2>
+              <div className="mt-6 space-y-4 text-sm leading-7 text-slate-300">
+                <p>O Ponto Inteligente foi pensado para equipas que querem sair do Excel sem entrar num software pesado.</p>
+                <p>O foco está na rapidez do registo, clareza do histórico e leitura simples da jornada.</p>
+                <p>Uma experiência direta, prática e fácil de adotar no dia a dia.</p>
+              </div>
+            </motion.div>
+
+            <div className="grid gap-4">
+              {faqs.map((faq, index) => (
+                <motion.div
+                  key={faq.question}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.06 }}
+                  viewport={{ once: true }}
+                >
+                  <Card className="rounded-[1.6rem] border border-white/10 bg-slate-950/40 p-6 backdrop-blur">
+                    <div className="flex items-start gap-4">
+                      <CalendarRange className="mt-1 h-5 w-5 text-cyan-200" />
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">{faq.question}</h3>
+                        <p className="mt-2 text-sm leading-7 text-slate-300">{faq.answer}</p>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            viewport={{ once: true }}
+            className="rounded-[2.25rem] border border-white/10 bg-linear-to-r from-blue-600/20 via-cyan-400/10 to-emerald-400/20 px-8 py-10 text-center backdrop-blur"
+          >
+            <p className="text-sm uppercase tracking-[0.2em] text-cyan-100">Começar agora</p>
+            <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">
+              Comece hoje a organizar a jornada da sua equipa.
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">
+              Crie conta, escolha o plano certo e acompanhe entradas, saídas e resumos mensais com mais
+              clareza e menos trabalho manual.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link href="/register">
+                <Button size="lg" className="rounded-full bg-white px-8 text-slate-900 hover:bg-slate-100">
+                  Criar conta
                 </Button>
               </Link>
-             
+              <Link href="/login">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full border-white/20 bg-transparent px-8 text-white hover:bg-white/10 hover:text-white"
+                >
+                  Entrar na plataforma
+                </Button>
+              </Link>
+              <Link href="/billing">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full border-emerald-300/30 bg-emerald-400/10 px-8 text-white hover:bg-emerald-400/15 hover:text-white"
+                >
+                  Gerir faturação
+                </Button>
+              </Link>
             </div>
           </motion.div>
+        </section>
 
-          {/* Floating cards animation */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm p-6">
-              <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
-                <Clock className="w-6 h-6 text-blue-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Registo Rápido</h3>
-              <p className="text-slate-400 text-sm">
-                Marque entrada e saída com um clique. Interface intuitiva e responsiva.
-              </p>
-            </Card>
-
-            <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm p-6">
-              <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-purple-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Horas Extras</h3>
-              <p className="text-slate-400 text-sm">
-                Cálculo automático de horas extras conforme legislação portuguesa.
-              </p>
-            </Card>
-
-            <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm p-6">
-              <div className="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-4">
-                <Calendar className="w-6 h-6 text-emerald-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Histórico Completo</h3>
-              <p className="text-slate-400 text-sm">
-                Consulte o histórico de registos e estatísticas mensais detalhadas.
-              </p>
-            </Card>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="max-w-6xl mx-auto px-4 py-20">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-              Pensado para a rotina de trabalho em Portugal
-            </h2>
-            <p className="text-slate-300 mb-6">
-              Sistema focado em registo diário, histórico e leitura rápida das horas
-              trabalhadas, com regras base alinhadas com jornadas comuns em Portugal.
-            </p>
-            <ul className="space-y-4">
-              {[
-                'Base diária de 8h e referência semanal de 40h',
-                'Separação clara entre períodos de trabalho',
-                'Resumo automático do total diário e mensal',
-                'Histórico simples para conferência e acompanhamento'
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3 text-slate-300">
-                  <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
-                    <Shield className="w-4 h-4 text-blue-400" />
-                  </div>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="bg-linear-to-br from-blue-500/10 to-purple-500/10 rounded-2xl p-8 border border-slate-700">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
-                  <span className="text-slate-300">Total Mensal</span>
-                  <span className="text-2xl font-bold text-white">168h</span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
-                  <span className="text-slate-300">Horas Extras</span>
-                  <span className="text-2xl font-bold text-amber-400">12h</span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
-                  <span className="text-slate-300">Dias Trabalhados</span>
-                  <span className="text-2xl font-bold text-emerald-400">21</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Pronto para começar?
-          </h2>
-          <p className="text-xl text-slate-300 mb-8">
-            Faça login e comece a gerir o seu tempo de forma inteligente.
-          </p>
-          <Link href="/login">
-            <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-6 text-lg">
-              <Users className="w-5 h-5 mr-2" />
-              Fazer Login
-            </Button>
-          </Link>
-        </motion.div>
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 py-8 text-center text-slate-400 text-sm">
-          <p>© 2026 Controle de Ponto. Registo simples e fiável da jornada de trabalho.</p>
-        </div>
+        <footer className="border-t border-white/10 py-8 text-center text-sm text-slate-400">
+          <p>© 2026 Ponto Inteligente. Registo simples e fiável da jornada de trabalho.</p>
+        </footer>
       </div>
     </div>
   );
