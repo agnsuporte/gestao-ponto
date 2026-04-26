@@ -79,3 +79,5 @@ Sempre que fizeres grandes alterações no código, lembra-te da sequência:
 docker compose build app
 docker compose up -d
 Precisas de ajuda com 
+
+stripe listen --forward-to localhost:3000/api/stripe/webhook

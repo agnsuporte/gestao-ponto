@@ -145,7 +145,7 @@ export default function Home() {
             <Link href="#pricing" className="hidden text-sm text-slate-300 transition hover:text-white sm:inline">
               Ver preços
             </Link>
-            <Link href="/login">
+            <Link href="/time-record">
               <Button className="rounded-full bg-white text-slate-900 hover:bg-slate-100">
                 Entrar
               </Button>
