@@ -76,8 +76,14 @@ Como aplicar agora:
 Basta correr docker-compose up --build -d app.
 
 Sempre que fizeres grandes alterações no código, lembra-te da sequência:
-docker compose build app
+
+docker compose build app (docker compose up --build -d app)
 docker compose up -d
-Precisas de ajuda com 
+
+d) pgAdmin4
+
+$ docker compose start pgadmin
+$ docker compose stop pgadmin
+
 
 stripe listen --forward-to localhost:3000/api/stripe/webhook
