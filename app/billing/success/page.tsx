@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
+import { RefreshSession } from '@/components/billing/refresh-session';
 
 export default async function BillingSuccessPage({
   searchParams,
@@ -13,6 +14,7 @@ export default async function BillingSuccessPage({
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-linear-to-b from-slate-50 via-white to-slate-100 p-4">
+      <RefreshSession />
       <Card className="w-full max-w-xl rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-sm">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
           <CheckCircle2 className="h-8 w-8" />
