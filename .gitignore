@@ -68,6 +68,7 @@ pgdatabase/
 *.log
 *.tmp
 *.temp
+*.sql
 Base44*
 stripe.exe
 rascunho.md

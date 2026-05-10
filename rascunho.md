@@ -87,3 +87,38 @@ $ docker compose stop pgadmin
 
 
 stripe listen --forward-to localhost:3000/api/stripe/webhook
+
+1. Criar o Backup na VPSAceda à sua VPS via terminal e execute o seguinte comando para gerar o backup a partir do contentor Docker:
+# docker exec -t a4185814ec54 pg_dump -U deploy records > backup_db.sql
+
+2. Baixar o Arquivo para o seu PC (Local)Agora, no terminal do seu computador local (não dentro da VPS), use o comando SCP para descarregar o arquivo:
+# scp deploy@187.33.159.187:/opt/stack/backup_db.sql ./
+
+O SCP (Secure Copy Protocol) é uma ferramenta de linha de comando que permite copiar ficheiros ou pastas entre computadores de forma segura, utilizando o protocolo SSH para encriptar os dados durante a transferência.
+
+A lógica do comando é sempre: 
+* scp [origem] [destino].
+
+A Estrutura do ComandoQuando copias algo de um servidor remoto para o teu PC, a estrutura detalhada é esta:
+# bash$ scp utilizador@servidor:/caminho/do/ficheiro  /caminho/no/teu/pc
+Use o código com cuidado.
+utilizador: O nome de utilizador que usas para entrar na VPS (ex: root ou ubuntu).
+@servidor: O endereço IP ou domínio da tua VPS.:
+: Este dois-pontos é obrigatório; ele separa o endereço do servidor do caminho do ficheiro./caminho/do/ficheiro: O local exato na VPS onde está o teu backup./caminho/no/teu/pc: Onde queres que o ficheiro "aterre" (podes usar apenas . para indicar a pasta onde estás no momento).
+
+Casos Comuns de Uso
+# Baixar um ficheiro da VPS:
+  * scp root@1.2.3.4:/home/backup.sql .(Copia o ficheiro para a pasta atual do teu PC)
+  
+# Enviar um ficheiro do teu PC para a VPS:
+  * scp script.sh root@1.2.3.4:/tmp/(O ficheiro local vai para a pasta /tmp da VPS)
+
+# Baixar uma pasta inteira (usando o -r de recursivo):
+  * scp -r root@1.2.3.4:/var/www/html ./meu_site_backup
+
+Se usas uma porta SSH diferente (ex: porta 2222):
+scp -P 2222 root@1.2.3.4:/caminho/ficheiro . 
+(Nota: o -P é maiúsculo no SCP)
+
+Por que é bom usar?
+Diferente do FTP tradicional, o SCP já vem instalado em quase todos os sistemas (Linux, Mac e Windows 10/11) e aproveita as mesmas chaves de acesso e segurança que já usas para o teu SSH normal.
