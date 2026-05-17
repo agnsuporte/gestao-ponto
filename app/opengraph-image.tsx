@@ -48,7 +48,7 @@ export default function OpenGraphImage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: '30px', fontWeight: 700 }}>Ponto Inteligente</div>
-            <div style={{ marginTop: '8px', fontSize: '18px', color: '#cbd5e1' }}>alegomes.eu</div>
+            <div style={{ marginTop: '8px', fontSize: '18px', color: '#cbd5e1' }}>clicponto.com</div>
           </div>
         </div>
 

@@ -45,49 +45,51 @@ const steps = [
 
 const pricingPlans = [
   {
-    key: "solo" as const,
-    name: "Solo",
-    price: "€3",
+    key: "mensal" as const,
+    name: "Mensal",
+    price: "€2,50",
     cadence: "/mês",
-    description: "Para profissionais independentes que querem registar e consultar o tempo com clareza.",
+    description: "Acesso contínuo com renovação automática mês a mês.",
     cta: "Subscrever",
     accent: "slate",
     features: [
+      "Acesso total a todas as ferramentas",
       "Registo diário de entradas e saídas",
-      "Histórico mensal simples",
-      "Resumo de horas trabalhadas",
-      "Acesso online",
+      "Histórico completo e resumo de horas",
+      "Suporte standard por e-mail",
+      "Cancelamento gratuito a qualquer momento",
     ],
   },
   {
-    key: "equipa" as const,
-    name: "Equipa",
-    price: "€9",
-    cadence: "/mês",
-    description: "Até 5 utilizadores, ideal para pequenas equipas que precisam de simplicidade.",
+    key: "trimestral" as const,
+    name: "Trimestral",
+    price: "€5,00",
+    cadence: "/trimestre",
+    description: "Cobrado a cada 3 meses. Ideal para consistência a médio prazo.",
     cta: "Subscrever",
     accent: "blue",
     featured: true,
     features: [
-      "Tudo no plano Solo",
-      "Até 5 utilizadores",
-      "Acompanhamento da equipa",
-      "Leitura rápida do histórico",
+      "Tudo o que está incluído no Mensal",
+      "Garantia de preço fixo por 3 meses",
+      "Maior estabilidade de planeamento",
+      "Suporte prioritário na comunidade",
     ],
   },
   {
-    key: "piloto" as const,
-    name: "Piloto Assistido",
-    price: "€21",
-    cadence: "/mês",
-    description: "Para os primeiros clientes que querem apoio próximo na configuração e adoção.",
+    key: "anual" as const,
+    name: "Anual",
+    price: "€10,50",
+    cadence: "/ano",
+    description: "Pagamento único anual. O melhor valor para apoiar o projeto.",
     cta: "Subscrever",
     accent: "emerald",
     features: [
-      "Tudo no plano Equipa",
-      "Acompanhamento mais próximo",
-      "Apoio inicial na adoção",
-      "Ideal para beta pago",
+      "Tudo o que está incluído no Trimestral",
+      "Selo/Distintivo de 'Apoiador Fundador'",
+      "Acesso antecipado a novas funcionalidades (Beta)",
+      "Canal direto de feedback com os criadores",
+      "Maior poupança financeira a longo prazo",
     ],
   },
 ];
@@ -137,7 +139,7 @@ export default function Home() {
               <p className="text-sm font-semibold tracking-[0.18em] text-slate-200 uppercase">
                 Ponto Inteligente
               </p>
-              <p className="text-xs text-slate-400">alegomes.eu</p>
+              <p className="text-xs text-slate-400">clicponto.com</p>
             </div>
           </div>
 
@@ -171,12 +173,12 @@ export default function Home() {
               <h1 className="max-w-3xl text-5xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">
                 Controle de ponto simples
                 <span className="block bg-linear-to-r from-blue-300 via-cyan-300 to-emerald-300 bg-clip-text text-transparent">
-                  para equipas pequenas.
+                  para toda gente.
                 </span>
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
-                Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.
+                Software simples de controlo de ponto e registo de horas.
                 Registe entradas e saídas, consulte o histórico e acompanhe o resumo mensal sem complicação.
               </p>
 
@@ -222,7 +224,7 @@ export default function Home() {
               <Card className="overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/55 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur">
                 <div className="flex items-center justify-between border-b border-white/10 pb-5">
                   <div>
-                    <p className="text-sm text-slate-400">Resumo da equipa</p>
+                    <p className="text-sm text-slate-400">Resumo</p>
                     <h2 className="mt-1 text-2xl font-semibold text-white">Visão rápida da jornada</h2>
                   </div>
                   <BadgeCheck className="h-8 w-8 text-emerald-300" />
@@ -464,7 +466,7 @@ export default function Home() {
                   Criar conta
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href="/time-record">
                 <Button
                   size="lg"
                   variant="outline"
@@ -487,7 +489,7 @@ export default function Home() {
         </section>
 
         <footer className="border-t border-white/10 py-8 text-center text-sm text-slate-400">
-          <p>© 2026 Ponto Inteligente. Registo simples e fiável da jornada de trabalho.</p>
+          <p>© 2026 Clic Ponto. Registo simples e fiável da jornada de trabalho.</p>
         </footer>
       </div>
     </div>

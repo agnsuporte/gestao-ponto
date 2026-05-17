@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.kind !== 'subscription' || !body.plan || !isStripePlanKey(body.plan)) {
-      return NextResponse.json({ error: 'Plano inválido' }, { status: 400 });
+      return NextResponse.json({ error: 'Plano inválido!' }, { status: 400 });
     }
 
     const session = await getServerSession(authOptions);

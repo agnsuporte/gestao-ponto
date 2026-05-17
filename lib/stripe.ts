@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 
-export const STRIPE_PLAN_KEYS = ['solo', 'equipa', 'piloto'] as const;
+export const STRIPE_PLAN_KEYS = ['mensal', 'trimestral', 'anual'] as const;
 
 export type StripePlanKey = (typeof STRIPE_PLAN_KEYS)[number];
 
@@ -22,9 +22,9 @@ export function getStripe() {
 
 export function getPlanPriceId(plan: StripePlanKey) {
   const priceMap: Record<StripePlanKey, string | undefined> = {
-    solo: process.env.STRIPE_PRICE_SOLO,
-    equipa: process.env.STRIPE_PRICE_EQUIPA,
-    piloto: process.env.STRIPE_PRICE_PILOTO,
+    mensal: process.env.STRIPE_PRICE_MENSAL,
+    trimestral: process.env.STRIPE_PRICE_TRIMESTRAL,
+    anual: process.env.STRIPE_PRICE_ANUAL,
   };
 
   const priceId = priceMap[plan];

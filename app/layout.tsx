@@ -4,7 +4,7 @@ import { Providers, AuthProvider} from './providers';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://alegomes.eu'),
+  metadataBase: new URL('https://clicponto.com'),
   title: {
     default: 'Ponto Inteligente',
     template: '%s | Ponto Inteligente',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Ponto Inteligente',
     description: 'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
-    url: 'https://alegomes.eu',
+    url: 'https://clicponto.com',
     siteName: 'Ponto Inteligente',
     images: [
       {

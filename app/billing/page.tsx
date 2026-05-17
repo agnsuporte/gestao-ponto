@@ -12,24 +12,25 @@ import prisma from '@/lib/prisma';
 
 const plans = [
   {
-    key: 'solo' as const,
-    name: 'Solo',
-    price: '€3/mês',
-    description: 'Para profissionais independentes que querem uma solução simples para registar a jornada.',
+    key: 'mensal' as const,
+    name: 'Mensal',
+    price: '€2,50/mês',
+    description: 'Flexibilidade total para apoiar o projeto mensalmente.',
   },
   {
-    key: 'equipa' as const,
-    name: 'Equipa',
-    price: '€9/mês',
-    description: 'Até 5 utilizadores para pequenas equipas que querem mais organização sem complicação.',
+    key: 'trimestral' as const,
+    name: 'Trimestral',
+    price: '€5,00/trimestre',
+    description: 'Economize no valor proporcional face ao plano mensal.',
   },
   {
-    key: 'piloto' as const,
-    name: 'Piloto Assistido',
-    price: '€21/mês',
-    description: 'Para quem quer acompanhamento mais próximo no arranque e na adoção inicial.',
+    key: 'anual' as const,
+    name: 'Anual',
+    price: '€10,50/ano',
+    description: 'Acesso anual completo com o maior desconto por mês.',
   },
 ];
+
 
 export default async function BillingPage() {
   const session = await getServerSession(authOptions);

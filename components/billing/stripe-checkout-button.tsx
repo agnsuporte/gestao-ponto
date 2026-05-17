@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 type StripeCheckoutButtonProps = {
   kind: 'subscription' | 'donation';
-  plan?: 'solo' | 'equipa' | 'piloto';
+  plan?: 'mensal' | 'trimestral' | 'anual';
   amount?: number;
   children: React.ReactNode;
   className?: string;
