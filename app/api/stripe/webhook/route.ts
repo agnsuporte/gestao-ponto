@@ -12,13 +12,19 @@ export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
-    return NextResponse.json({ error: 'STRIPE_WEBHOOK_SECRET não configurada' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'STRIPE_WEBHOOK_SECRET não configurada' },
+      { status: 500 }
+    );
   }
 
   const signature = (await headers()).get('stripe-signature');
 
   if (!signature) {
-    return NextResponse.json({ error: 'Assinatura Stripe em falta' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Assinatura Stripe em falta' },
+      { status: 400 }
+    );
   }
 
   const payload = await request.text();
@@ -36,7 +42,10 @@ export async function POST(request: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
 
-        if (session.mode === 'subscription' && typeof session.subscription === 'string') {
+        if (
+          session.mode === 'subscription' &&
+          typeof session.subscription === 'string'
+        ) {
           const customerId =
             typeof session.customer === 'string'
               ? session.customer
@@ -86,7 +95,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Erro ao processar webhook';
+    const message =
+      error instanceof Error ? error.message : 'Erro ao processar webhook';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

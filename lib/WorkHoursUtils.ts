@@ -8,7 +8,7 @@ export const WEEKLY_MINUTES = WEEKLY_HOURS * 60;
 export const OVERTIME_RATES = {
   first_two_hours: 0.25,
   additional_hours: 0.375,
-  rest_days: 0.50,
+  rest_days: 0.5,
 };
 
 export function parseTime(timeStr: string | null | undefined): number | null {
@@ -17,14 +17,18 @@ export function parseTime(timeStr: string | null | undefined): number | null {
   return hours * 60 + minutes;
 }
 
-export function formatMinutesToTime(totalMinutes: number | null | undefined): string {
+export function formatMinutesToTime(
+  totalMinutes: number | null | undefined
+): string {
   if (totalMinutes === null || totalMinutes === undefined) return '--:--';
   const hours = Math.floor(totalMinutes / 60);
   const minutes = Math.round(totalMinutes % 60);
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
-export function calculateDailyWorkMinutes(record: TimeRecord | null | undefined): { total: number; overtime: number } {
+export function calculateDailyWorkMinutes(
+  record: TimeRecord | null | undefined
+): { total: number; overtime: number } {
   if (!record) return { total: 0, overtime: 0 };
   let totalMinutes = 0;
 
@@ -53,11 +57,17 @@ export interface MonthlyStats {
 }
 
 export function calculateMonthlyStats(records: TimeRecord[]): MonthlyStats {
-  const totalMinutes = records.reduce((sum, r) => sum + (r.total_minutes || 0), 0);
-  const totalOvertime = records.reduce((sum, r) => sum + (r.overtime_minutes || 0), 0);
+  const totalMinutes = records.reduce(
+    (sum, r) => sum + (r.total_minutes || 0),
+    0
+  );
+  const totalOvertime = records.reduce(
+    (sum, r) => sum + (r.overtime_minutes || 0),
+    0
+  );
   return {
     totalMinutes,
     totalOvertime,
-    daysWorked: records.filter(r => (r.total_minutes || 0) > 0).length,
+    daysWorked: records.filter((r) => (r.total_minutes || 0) > 0).length,
   };
 }

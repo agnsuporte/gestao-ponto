@@ -12,34 +12,34 @@ O foco inicial é uso individual, com arquitetura preparada para futura expansã
 
 ### Frontend
 
-* **Next.js (App Router)**
-* **React Server Components**
-* **shadcn/ui**
-* **TailwindCSS**
-* **Lucide Icons**
+- **Next.js (App Router)**
+- **React Server Components**
+- **shadcn/ui**
+- **TailwindCSS**
+- **Lucide Icons**
 
 ### Backend
 
-* **Next.js Server Actions / API Routes**
-* **Prisma ORM**
-* **PostgreSQL**
+- **Next.js Server Actions / API Routes**
+- **Prisma ORM**
+- **PostgreSQL**
 
 ---
 
 ## 3. Funcionalidades
 
-* Registro de ponto com três períodos:
+- Registro de ponto com três períodos:
+  - Turno 1 (entrada / saída)
+  - Almoço (entrada / saída)
+  - Turno 2 (entrada / saída)
 
-  * Turno 1 (entrada / saída)
-  * Almoço (entrada / saída)
-  * Turno 2 (entrada / saída)
-* Botão inteligente de entrada/saída por período
-* Visualização do histórico diário
-* Cálculo automático de:
+- Botão inteligente de entrada/saída por período
+- Visualização do histórico diário
+- Cálculo automático de:
+  - Horas trabalhadas
+  - Horas extras
 
-  * Horas trabalhadas
-  * Horas extras
-* Interface limpa, minimalista e responsiva
+- Interface limpa, minimalista e responsiva
 
 ---
 
@@ -47,8 +47,8 @@ O foco inicial é uso individual, com arquitetura preparada para futura expansã
 
 ### Jornada de Trabalho
 
-* Jornada padrão: **8 horas diárias (480 minutos)**
-* O período de almoço **não é contabilizado** como tempo de trabalho
+- Jornada padrão: **8 horas diárias (480 minutos)**
+- O período de almoço **não é contabilizado** como tempo de trabalho
 
 ### Cálculo de Horas
 
@@ -67,11 +67,11 @@ Cada usuário possui **um registro por dia**.
 
 Campos principais:
 
-* Identificação do usuário
-* Data do registro
-* Horários de entrada e saída de cada período
-* Total trabalhado (em minutos)
-* Horas extras (em minutos)
+- Identificação do usuário
+- Data do registro
+- Horários de entrada e saída de cada período
+- Total trabalhado (em minutos)
+- Horas extras (em minutos)
 
 Todos os cálculos são realizados no backend para garantir consistência.
 
@@ -82,9 +82,9 @@ Todos os cálculos são realizados no backend para garantir consistência.
 1. Usuário acessa a página principal
 2. Visualiza a data atual e os cartões de turno
 3. Clica no botão do período desejado:
+   - Primeiro clique: registra entrada
+   - Segundo clique: registra saída
 
-   * Primeiro clique: registra entrada
-   * Segundo clique: registra saída
 4. O sistema atualiza automaticamente o resumo do dia
 
 ---
@@ -93,15 +93,15 @@ Todos os cálculos são realizados no backend para garantir consistência.
 
 ### Paleta de Cores
 
-* Azul profundo: `#1e3a5f`
-* Verde água (ações): `#10b981`
+- Azul profundo: `#1e3a5f`
+- Verde água (ações): `#10b981`
 
 ### Estilo
 
-* Visual minimalista
-* Cards com sombras suaves
-* Bordas arredondadas
-* Animações sutis de interação
+- Visual minimalista
+- Cards com sombras suaves
+- Bordas arredondadas
+- Animações sutis de interação
 
 ---
 
@@ -120,12 +120,12 @@ app/
 
 ## 9. Evoluções Futuras
 
-* Banco de horas
-* Relatórios semanais e mensais
-* Exportação PDF / Excel
-* Multiusuário e multiempresa
-* Controle por geolocalização
-* Auditoria e logs
+- Banco de horas
+- Relatórios semanais e mensais
+- Exportação PDF / Excel
+- Multiusuário e multiempresa
+- Controle por geolocalização
+- Auditoria e logs
 
 ---
 

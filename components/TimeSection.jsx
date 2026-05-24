@@ -1,18 +1,18 @@
 import React from 'react';
-import { Card } from "@/components/ui/card";
+import { Card } from '@/components/ui/card';
 import TimeClockButton from './TimeClockButton';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
-export default function TimeSection({ 
-  title, 
-  icon: Icon, 
-  entradaTime, 
-  saidaTime, 
-  onEntrada, 
+export default function TimeSection({
+  title,
+  icon: Icon,
+  entradaTime,
+  saidaTime,
+  onEntrada,
   onSaida,
   entradaDisabled,
   saidaDisabled,
-  bgColor = "bg-white"
+  bgColor = 'bg-white',
 }) {
   return (
     <motion.div
@@ -20,7 +20,9 @@ export default function TimeSection({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={`${bgColor} border-0 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden`}>
+      <Card
+        className={`${bgColor} border-0 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden`}
+      >
         <div className="p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-lg bg-slate-100">
@@ -28,7 +30,7 @@ export default function TimeSection({
             </div>
             <h3 className="font-semibold text-slate-800 text-lg">{title}</h3>
           </div>
-          
+
           <div className="flex justify-around items-center">
             <TimeClockButton
               label="Entrada"

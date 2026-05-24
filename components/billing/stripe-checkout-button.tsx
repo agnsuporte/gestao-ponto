@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -67,7 +67,10 @@ export function StripeCheckoutButton({
 
       window.location.assign(data.url);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Não foi possível iniciar o checkout';
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível iniciar o checkout';
       window.alert(message);
     } finally {
       setIsLoading(false);

@@ -52,25 +52,39 @@ function LoginForm() {
       redirect: false,
       callbackUrl,
     });
-    
+
     setIsLoading(false);
     if (result?.error) {
       setError('Erro ao enviar email. Tente novamente.');
     } else {
       setEmailSent(true);
-    }    
+    }
   };
 
   if (emailSent) {
     return (
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
         <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <svg
+            className="w-8 h-8 text-emerald-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">Verifique o seu email</h2>
-        <p className="text-slate-500">Enviámos um link de acesso para <strong>{email}</strong></p>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">
+          Verifique o seu email
+        </h2>
+        <p className="text-slate-500">
+          Enviámos um link de acesso para <strong>{email}</strong>
+        </p>
       </div>
     );
   }
@@ -85,7 +99,9 @@ function LoginForm() {
       <div className="bg-white rounded-2xl shadow-xl p-8">
         <form onSubmit={handleCredentialsLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -96,7 +112,9 @@ function LoginForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -129,7 +147,10 @@ function LoginForm() {
 
         <p className="text-center text-slate-500 text-sm mt-6">
           Não tem conta?{' '}
-          <Link href={registerUrl} className="text-slate-800 font-medium hover:underline">
+          <Link
+            href={registerUrl}
+            className="text-slate-800 font-medium hover:underline"
+          >
             Criar conta
           </Link>
         </p>

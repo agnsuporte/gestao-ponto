@@ -14,7 +14,7 @@ function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const nextUrl = searchParams.get('next');
   const loginUrl = nextUrl
     ? `/login?next=${encodeURIComponent(nextUrl)}`
@@ -67,7 +67,9 @@ function RegisterForm() {
       <div className="bg-white rounded-2xl shadow-xl p-8">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Nome
+            </label>
             <input
               type="text"
               value={name}
@@ -78,7 +80,9 @@ function RegisterForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -89,7 +93,9 @@ function RegisterForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -100,7 +106,9 @@ function RegisterForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Confirmar Password</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Confirmar Password
+            </label>
             <input
               type="password"
               value={confirmPassword}
@@ -111,9 +119,7 @@ function RegisterForm() {
             />
           </div>
 
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
@@ -126,7 +132,10 @@ function RegisterForm() {
 
         <p className="text-center text-slate-500 text-sm mt-6">
           Já tem conta?{' '}
-          <Link href={loginUrl} className="text-slate-800 font-medium hover:underline">
+          <Link
+            href={loginUrl}
+            className="text-slate-800 font-medium hover:underline"
+          >
             Entrar
           </Link>
         </p>

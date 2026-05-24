@@ -12,7 +12,10 @@ export async function POST() {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Autenticação necessária' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Autenticação necessária' },
+        { status: 401 }
+      );
     }
 
     const user = await prisma.user.findUnique({
@@ -23,7 +26,10 @@ export async function POST() {
     });
 
     if (!user?.stripeCustomerId) {
-      return NextResponse.json({ error: 'Cliente Stripe não encontrado' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Cliente Stripe não encontrado' },
+        { status: 404 }
+      );
     }
 
     const stripe = getStripe();
@@ -34,7 +40,10 @@ export async function POST() {
 
     return NextResponse.json({ url: portalSession.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Erro ao abrir portal de faturação';
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Erro ao abrir portal de faturação';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Card } from "@/components/ui/card";
-import { format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Calendar, Clock, TrendingUp } from "lucide-react";
-import { motion } from "framer-motion";
+import { Card } from '@/components/ui/card';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Calendar, Clock, TrendingUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { formatMinutesToTime } from '../lib/WorkHoursUtils';
 
 function TimeSlot({ label, entrada, saida }) {
@@ -15,16 +15,14 @@ function TimeSlot({ label, entrada, saida }) {
           {entrada || '--:--'}
         </span>
         <span className="text-slate-300">→</span>
-        <span className="text-slate-700 tabular-nums">
-          {saida || '--:--'}
-        </span>
+        <span className="text-slate-700 tabular-nums">{saida || '--:--'}</span>
       </div>
     </div>
   );
 }
 
 export default function HistoryCard({ record, index }) {
-  const dateFormatted = record.date 
+  const dateFormatted = record.date
     ? format(parseISO(record.date), "EEEE, dd 'de' MMMM", { locale: ptBR })
     : '';
 
@@ -41,7 +39,9 @@ export default function HistoryCard({ record, index }) {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-slate-400" />
-              <span className="font-medium text-slate-800 capitalize">{dateFormatted}</span>
+              <span className="font-medium text-slate-800 capitalize">
+                {dateFormatted}
+              </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1 text-sm">
@@ -52,24 +52,24 @@ export default function HistoryCard({ record, index }) {
               </div>
               {hasOvertime && (
                 <div className="flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                  <TrendingUp className="w-3 h-3" />
-                  +{formatMinutesToTime(record.overtime_minutes)}
+                  <TrendingUp className="w-3 h-3" />+
+                  {formatMinutesToTime(record.overtime_minutes)}
                 </div>
               )}
             </div>
           </div>
-          
+
           <div className="space-y-1">
-            <TimeSlot 
-              label="Jornada 1" 
-              entrada={record.turno1_entrada} 
-              saida={record.turno1_saida} 
+            <TimeSlot
+              label="Jornada 1"
+              entrada={record.turno1_entrada}
+              saida={record.turno1_saida}
             />
-  
-            <TimeSlot 
-              label="Jornada 2" 
-              entrada={record.turno2_entrada} 
-              saida={record.turno2_saida} 
+
+            <TimeSlot
+              label="Jornada 2"
+              entrada={record.turno2_entrada}
+              saida={record.turno2_saida}
             />
           </div>
         </div>

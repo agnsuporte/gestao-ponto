@@ -9,10 +9,10 @@ export async function GET() {
   if (session?.user?.id) {
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { billingStatus: 'free_trial' }
+      data: { billingStatus: 'free_trial' },
     });
   }
 
   // Redireciona para a página de sucesso para forçar o update da session
-  redirect('/billing/success'); 
+  redirect('/billing/success');
 }

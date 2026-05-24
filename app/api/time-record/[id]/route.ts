@@ -5,7 +5,6 @@ import { Prisma } from '@prisma/client';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { parseTimeRecordInput, withCalculatedTotals } from '@/lib/time-record';
 
-
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> } // Tipado como Promise
@@ -17,13 +16,16 @@ export async function PATCH(
   }
 
   try {
-    const { id } = await params; 
+    const { id } = await params;
     const existingRecord = await prisma.timeRecord.findUnique({
       where: { id },
     });
 
     if (!existingRecord) {
-      return NextResponse.json({ error: 'Registo não encontrado' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Registo não encontrado' },
+        { status: 404 }
+      );
     }
 
     if (existingRecord.userId !== session.user.id) {
@@ -42,7 +44,10 @@ export async function PATCH(
       });
 
       if (conflictingRecord) {
-        return NextResponse.json({ error: 'Já existe um registo para essa data' }, { status: 409 });
+        return NextResponse.json(
+          { error: 'Já existe um registo para essa data' },
+          { status: 409 }
+        );
       }
     }
 
@@ -77,13 +82,16 @@ export async function DELETE(
   }
 
   try {
-    const { id } = await params; 
+    const { id } = await params;
     const existingRecord = await prisma.timeRecord.findUnique({
       where: { id },
     });
 
     if (!existingRecord) {
-      return NextResponse.json({ error: 'Registo não encontrado' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Registo não encontrado' },
+        { status: 404 }
+      );
     }
 
     if (existingRecord.userId !== session.user.id) {

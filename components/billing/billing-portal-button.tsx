@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -37,12 +37,17 @@ export function BillingPortalButton({
           return;
         }
 
-        throw new Error(data.error ?? 'Não foi possível abrir a área de faturação');
+        throw new Error(
+          data.error ?? 'Não foi possível abrir a área de faturação'
+        );
       }
 
       window.location.assign(data.url);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Não foi possível abrir a área de faturação';
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível abrir a área de faturação';
       window.alert(message);
     } finally {
       setIsLoading(false);

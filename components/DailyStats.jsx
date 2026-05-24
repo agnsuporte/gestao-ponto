@@ -1,7 +1,7 @@
 // import React from 'react';
-import { Card } from "@/components/ui/card";
-import { Clock, TrendingUp, AlertTriangle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Card } from '@/components/ui/card';
+import { Clock, TrendingUp, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { formatMinutesToTime, DAILY_MINUTES } from '../lib/WorkHoursUtils';
 
 export default function DailyStats({ totalMinutes = 0, overtimeMinutes = 0 }) {
@@ -9,14 +9,13 @@ export default function DailyStats({ totalMinutes = 0, overtimeMinutes = 0 }) {
   const hasOvertime = overtimeMinutes > 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <Card className="bg-linear-to-br from-slate-800 to-slate-900 text-white border-0 shadow-xl overflow-hidden">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-slate-300">Horas Trabalhadas Hoje</h3>
+            <h3 className="text-sm font-medium text-slate-300">
+              Horas Trabalhadas Hoje
+            </h3>
             <Clock className="w-5 h-5 text-slate-400" />
           </div>
 
@@ -32,10 +31,10 @@ export default function DailyStats({ totalMinutes = 0, overtimeMinutes = 0 }) {
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${percentage}%` }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
               className={`h-full rounded-full ${
-                hasOvertime 
-                  ? 'bg-linear-to-r from-emerald-500 to-amber-500' 
+                hasOvertime
+                  ? 'bg-linear-to-r from-emerald-500 to-amber-500'
                   : 'bg-linear-to-r from-emerald-500 to-emerald-400'
               }`}
             />
@@ -58,7 +57,10 @@ export default function DailyStats({ totalMinutes = 0, overtimeMinutes = 0 }) {
           {!hasOvertime && totalMinutes > 0 && totalMinutes < DAILY_MINUTES && (
             <div className="flex items-center gap-2 text-slate-400 text-sm">
               <AlertTriangle className="w-4 h-4" />
-              <span>Faltam {formatMinutesToTime(DAILY_MINUTES - totalMinutes)} para completar</span>
+              <span>
+                Faltam {formatMinutesToTime(DAILY_MINUTES - totalMinutes)} para
+                completar
+              </span>
             </div>
           )}
         </div>

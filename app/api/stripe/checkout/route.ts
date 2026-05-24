@@ -28,7 +28,10 @@ export async function POST(request: NextRequest) {
       const amount = normalizeDonationAmount(body.amount);
 
       if (!amount) {
-        return NextResponse.json({ error: 'Valor de doação inválido' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Valor de doação inválido' },
+          { status: 400 }
+        );
       }
 
       const session = await stripe.checkout.sessions.create({
@@ -44,7 +47,8 @@ export async function POST(request: NextRequest) {
               unit_amount: amount * 100,
               product_data: {
                 name: 'Doação ao projeto Ponto Inteligente',
-                description: 'Apoio opcional para manter o projeto vivo e evoluir a plataforma.',
+                description:
+                  'Apoio opcional para manter o projeto vivo e evoluir a plataforma.',
               },
             },
           },
@@ -58,14 +62,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ url: session.url });
     }
 
-    if (body.kind !== 'subscription' || !body.plan || !isStripePlanKey(body.plan)) {
+    if (
+      body.kind !== 'subscription' ||
+      !body.plan ||
+      !isStripePlanKey(body.plan)
+    ) {
       return NextResponse.json({ error: 'Plano inválido!' }, { status: 400 });
     }
 
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id || !session.user.email) {
-      return NextResponse.json({ error: 'Autenticação necessária' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Autenticação necessária' },
+        { status: 401 }
+      );
     }
 
     const user = await prisma.user.findUnique({
@@ -73,7 +84,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'Utilizador não encontrado' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Utilizador não encontrado' },
+        { status: 404 }
+      );
     }
 
     let customerId = user.stripeCustomerId ?? undefined;
@@ -123,7 +137,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Erro ao criar sessão de checkout';
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Erro ao criar sessão de checkout';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

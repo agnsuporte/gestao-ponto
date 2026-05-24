@@ -1,18 +1,30 @@
-"use client"; //  Define este ficheiro como um Client Component
+'use client'; //  Define este ficheiro como um Client Component
 
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Briefcase, Sun, History, Loader2, BarChart3 } from 'lucide-react';
+import {
+  Briefcase,
+  Sun,
+  History,
+  Loader2,
+  BarChart3,
+  Edit3,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
+import ManualPunchModal from '@/components/ManualPunchModal';
+import { ManualPunchInput } from '@/lib/time-record';
 import TimeSection from '@/components/TimeSection';
 import HistoryCard from '@/components/HistoryCard';
 import DailyStats from '@/components/DailyStats';
 import MonthlyStats from '@/components/MonthlyStats';
 import MonthYearSelector from '@/components/MonthYearSelector';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { calculateDailyWorkMinutes, calculateMonthlyStats } from '@/lib/WorkHoursUtils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  calculateDailyWorkMinutes,
+  calculateMonthlyStats,
+} from '@/lib/WorkHoursUtils';
 // import { startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
 
 import { TimeRecord, TimeRecordField } from '@/types/timeRecord';
@@ -27,22 +39,47 @@ interface ClockMutationVariables {
 
 export default function Home(): React.JSX.Element {
   const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const today: string = format(new Date(), 'yyyy-MM-dd');
-  
+
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
-  //const currentTime: string = format(new Date(), "HH:mm");
-  const [currentTime, setCurrentTime] = useState<string>(() => format(new Date(), "HH:mm"));
+  const [currentTime, setCurrentTime] = useState<string>(() =>
+    format(new Date(), 'HH:mm')
+  );
 
-  const { data: todayRecord, isLoading: loadingToday } = useQuery<TimeRecord | null>({
-    queryKey: ['todayRecord', today],
-    queryFn: async (): Promise<TimeRecord | null> => {
-      const records = await api.timeRecords.filter({ date: today });
-      return records[0] || null;
+  const batchMutation = useMutation<TimeRecord, Error, ManualPunchInput>({
+    mutationFn: async (data: ManualPunchInput): Promise<TimeRecord> => {
+      // Se já houver registro hoje, atualiza utilizando o id existente
+      if (todayRecord?.id) {
+        return api.timeRecords.update(todayRecord.id, data);
+      }
+      // Caso contrário, cria um registro do zero passando a data de hoje e o bloco de dados
+      return api.timeRecords.create({ date: today, ...data });
+    },
+    onSuccess: (): void => {
+      queryClient.invalidateQueries({ queryKey: ['todayRecord'] });
+      queryClient.invalidateQueries({ queryKey: ['timeHistory'] });
+      setIsModalOpen(false); // Fecha o modal após o sucesso
     },
   });
 
-  const { data: history = [], isLoading: loadingHistory } = useQuery<TimeRecord[]>({
+  const handleBatchSubmit = async (data: ManualPunchInput) => {
+    await batchMutation.mutateAsync(data);
+  };
+
+  const { data: todayRecord, isLoading: loadingToday } =
+    useQuery<TimeRecord | null>({
+      queryKey: ['todayRecord', today],
+      queryFn: async (): Promise<TimeRecord | null> => {
+        const records = await api.timeRecords.filter({ date: today });
+        return records[0] || null;
+      },
+    });
+
+  const { data: history = [], isLoading: loadingHistory } = useQuery<
+    TimeRecord[]
+  >({
     queryKey: ['timeHistory', month, year],
     queryFn: async (): Promise<TimeRecord[]> => {
       return api.timeRecords.list('-date', 100, month, year);
@@ -50,7 +87,10 @@ export default function Home(): React.JSX.Element {
   });
 
   const clockMutation = useMutation<TimeRecord, Error, ClockMutationVariables>({
-    mutationFn: async ({ field, time }: ClockMutationVariables): Promise<TimeRecord> => {
+    mutationFn: async ({
+      field,
+      time,
+    }: ClockMutationVariables): Promise<TimeRecord> => {
       if (todayRecord?.id) {
         return api.timeRecords.update(todayRecord.id, { [field]: time });
       }
@@ -68,12 +108,17 @@ export default function Home(): React.JSX.Element {
     clockMutation.mutate({ field, time: now });
   };
 
-  const currentDate: string = format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-  // const monthLabel: string = format(new Date(), "MMMM 'de' yyyy", { locale: ptBR });
+  const currentDate: string = format(
+    new Date(),
+    "EEEE, dd 'de' MMMM 'de' yyyy",
+    { locale: ptBR }
+  );
   // Criamos uma data fictícia (mês no JS começa em 0, por isso -1)
   const specificMonth = new Date(2024, month - 1, 1);
 
-  const specificMonthLabel = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(specificMonth);
+  const specificMonthLabel = new Intl.DateTimeFormat('pt-BR', {
+    month: 'long',
+  }).format(specificMonth);
 
   const dailyStats = calculateDailyWorkMinutes(todayRecord);
 
@@ -82,7 +127,7 @@ export default function Home(): React.JSX.Element {
   useEffect(() => {
     // Cria um intervalo que roda a cada segundo (1000ms)
     const timer = setInterval(() => {
-      setCurrentTime(format(new Date(), "HH:mm"));
+      setCurrentTime(format(new Date(), 'HH:mm'));
     }, 1000);
 
     // Limpa o intervalo se o componente for destruído (evita memory leaks)
@@ -94,7 +139,7 @@ export default function Home(): React.JSX.Element {
       <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
         <Navbar />
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
@@ -105,27 +150,29 @@ export default function Home(): React.JSX.Element {
           <p className="text-slate-500 capitalize">{currentDate}</p>
           <div className="mt-4 inline-flex items-center gap-2 bg-slate-800 text-white px-5 py-2 rounded-full">
             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-            <span className="font-mono text-xl tabular-nums">{currentTime}</span>
+            <span className="font-mono text-xl tabular-nums">
+              {currentTime}
+            </span>
           </div>
         </motion.div>
 
         <Tabs defaultValue="today" className="w-full">
           <TabsList className="w-full mb-6 bg-slate-100 p-1 rounded-xl">
-            <TabsTrigger 
-              value="today" 
+            <TabsTrigger
+              value="today"
               className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
               <Sun className="w-4 h-4 mr-2" />
               Hoje
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="history"
               className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
               <History className="w-4 h-4 mr-2" />
               Histórico
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="stats"
               className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
@@ -141,9 +188,9 @@ export default function Home(): React.JSX.Element {
               </div>
             ) : (
               <>
-                <DailyStats 
-                  totalMinutes={dailyStats.total} 
-                  overtimeMinutes={dailyStats.overtime} 
+                <DailyStats
+                  totalMinutes={dailyStats.total}
+                  overtimeMinutes={dailyStats.overtime}
                 />
 
                 <TimeSection
@@ -154,7 +201,9 @@ export default function Home(): React.JSX.Element {
                   onEntrada={() => handleClock('turno1_entrada')}
                   onSaida={() => handleClock('turno1_saida')}
                   entradaDisabled={clockMutation.isPending}
-                  saidaDisabled={!todayRecord?.turno1_entrada || clockMutation.isPending}
+                  saidaDisabled={
+                    !todayRecord?.turno1_entrada || clockMutation.isPending
+                  }
                 />
 
                 <TimeSection
@@ -164,18 +213,35 @@ export default function Home(): React.JSX.Element {
                   saidaTime={todayRecord?.turno2_saida}
                   onEntrada={() => handleClock('turno2_entrada')}
                   onSaida={() => handleClock('turno2_saida')}
-                  entradaDisabled={!todayRecord?.turno1_saida || clockMutation.isPending}
-                  saidaDisabled={!todayRecord?.turno2_entrada || clockMutation.isPending}
+                  entradaDisabled={
+                    !todayRecord?.turno1_saida || clockMutation.isPending
+                  }
+                  saidaDisabled={
+                    !todayRecord?.turno2_entrada || clockMutation.isPending
+                  }
                 />
+
+                <div className="mt-4">
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-950 bg-slate-100 hover:bg-slate-200/80 px-4 py-2 rounded-xl transition-all"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    Lançar Jornadas Manualmente
+                  </button>
+                </div>
               </>
             )}
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">
-            <MonthYearSelector 
-              month={month} 
-              year={year} 
-              onChange={(m, y) => { setMonth(m); setYear(y); }}  
+            <MonthYearSelector
+              month={month}
+              year={year}
+              onChange={(m, y) => {
+                setMonth(m);
+                setYear(y);
+              }}
             />
 
             {loadingHistory ? (
@@ -202,15 +268,27 @@ export default function Home(): React.JSX.Element {
                 <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
               </div>
             ) : (
-              <MonthlyStats stats={monthlyStats} monthLabel={specificMonthLabel} />
+              <MonthlyStats
+                stats={monthlyStats}
+                monthLabel={specificMonthLabel}
+              />
             )}
           </TabsContent>
         </Tabs>
       </div>
+
+      <ManualPunchModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleBatchSubmit}
+        isPending={batchMutation.isPending}
+        defaultValues={{
+          turno1_entrada: todayRecord?.turno1_entrada ?? '',
+          turno1_saida: todayRecord?.turno1_saida ?? '',
+          turno2_entrada: todayRecord?.turno2_entrada ?? '',
+          turno2_saida: todayRecord?.turno2_saida ?? '',
+        }}
+      />
     </div>
   );
 }
-
-
-
-

@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import { Providers, AuthProvider} from './providers';
+import type { Metadata } from 'next';
+import { Providers, AuthProvider } from './providers';
 
-import "./globals.css";
+import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://clicponto.com'),
@@ -9,11 +9,13 @@ export const metadata: Metadata = {
     default: 'Ponto Inteligente',
     template: '%s | Ponto Inteligente',
   },
-  description: 'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
+  description:
+    'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
   keywords: ['trabalho', 'tempo', 'ponto', 'produtividade', 'gestão de tempo'],
   openGraph: {
     title: 'Ponto Inteligente',
-    description: 'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
+    description:
+      'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
     url: 'https://clicponto.com',
     siteName: 'Ponto Inteligente',
     images: [
@@ -30,7 +32,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Ponto Inteligente',
-    description: 'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
+    description:
+      'Software simples de controlo de ponto e registo de horas para pequenas equipas em Portugal.',
     images: ['/opengraph-image'],
   },
   robots: {
@@ -42,8 +45,7 @@ export const metadata: Metadata = {
       follow: true,
     },
   },
-}
-
+};
 
 export default function RootLayout({
   children,
@@ -53,7 +55,10 @@ export default function RootLayout({
   return (
     <html lang="pt-PT">
       <body>
-       <AuthProvider> <Providers>{children}</Providers> </AuthProvider>
+        <AuthProvider>
+          {' '}
+          <Providers>{children}</Providers>{' '}
+        </AuthProvider>
       </body>
     </html>
   );

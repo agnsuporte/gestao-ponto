@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 
@@ -7,7 +7,10 @@ import { StripeCheckoutButton } from '@/components/billing/stripe-checkout-butto
 export function DonationCheckoutForm() {
   const [amount, setAmount] = useState('15');
   const normalizedAmount = Number(amount);
-  const isValidAmount = Number.isFinite(normalizedAmount) && normalizedAmount >= 1 && normalizedAmount <= 500;
+  const isValidAmount =
+    Number.isFinite(normalizedAmount) &&
+    normalizedAmount >= 1 &&
+    normalizedAmount <= 500;
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

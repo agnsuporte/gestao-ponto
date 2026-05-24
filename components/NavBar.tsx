@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { Menu, ReceiptText } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { Menu, ReceiptText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 import {
   Sheet,
@@ -8,12 +8,16 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 
-import { LogoutButton } from "@/components/LogoutButton"; // Teu componente atual
+import { LogoutButton } from '@/components/LogoutButton'; // Teu componente atual
 
 const navItems = [
-  { label: "Gerir Faturação", href: "/billing", icon: <ReceiptText className="w-4 h-4 mr-2" /> },
+  {
+    label: 'Gerir Faturação',
+    href: '/billing',
+    icon: <ReceiptText className="w-4 h-4 mr-2" />,
+  },
 ];
 
 export function Navbar() {

@@ -14,10 +14,10 @@ export interface TimeRecord {
   updated_date?: string;
 }
 
-export type TimeRecordField = 
-  | 'turno1_entrada' 
-  | 'turno1_saida' 
-  | 'almoco_entrada' 
-  | 'almoco_saida' 
-  | 'turno2_entrada' 
+export type TimeRecordField =
+  | 'turno1_entrada'
+  | 'turno1_saida'
+  | 'almoco_entrada'
+  | 'almoco_saida'
+  | 'turno2_entrada'
   | 'turno2_saida';

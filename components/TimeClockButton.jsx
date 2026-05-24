@@ -1,11 +1,17 @@
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Clock, LogIn, LogOut } from "lucide-react";
-import { motion } from "framer-motion";
+import { Button } from '@/components/ui/button';
+import { Clock, LogIn, LogOut } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export default function TimeClockButton({ label, time, onClock, type, disabled }) {
+export default function TimeClockButton({
+  label,
+  time,
+  onClock,
+  type,
+  disabled,
+}) {
   const isEntry = type === 'entrada';
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -15,7 +21,7 @@ export default function TimeClockButton({ label, time, onClock, type, disabled }
       <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
         {label}
       </span>
-      
+
       {time ? (
         <div className="flex items-center gap-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200">
           <Clock className="w-4 h-4 text-slate-400" />
@@ -29,9 +35,11 @@ export default function TimeClockButton({ label, time, onClock, type, disabled }
           disabled={disabled}
           className={`
             px-6 py-6 rounded-xl text-white font-medium shadow-lg transition-all duration-300
-            ${isEntry 
-              ? 'bg-emerald-500 hover:bg-emerald-600 hover:shadow-emerald-200' 
-              : 'bg-rose-500 hover:bg-rose-600 hover:shadow-rose-200'}
+            ${
+              isEntry
+                ? 'bg-emerald-500 hover:bg-emerald-600 hover:shadow-emerald-200'
+                : 'bg-rose-500 hover:bg-rose-600 hover:shadow-rose-200'
+            }
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >

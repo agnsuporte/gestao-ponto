@@ -1,4 +1,3 @@
-
 import { TimeRecord } from '@/types/timeRecord';
 
 const API_URL = '/api/time-record';
@@ -21,13 +20,18 @@ export const api = {
       return res.json();
     },
 
-    list: async (_sort: string, limit: number, month?: number, year?: number): Promise<TimeRecord[]> => {
+    list: async (
+      _sort: string,
+      limit: number,
+      month?: number,
+      year?: number
+    ): Promise<TimeRecord[]> => {
       // Construindo a URL com os filtros
       let url = `${API_URL}?limit=${limit}`;
-      
+
       if (month) url += `&month=${month}`;
       if (year) url += `&year=${year}`;
-      
+
       // const res = await fetch(`${API_URL}?limit=${limit}`);
       const res = await fetch(url);
       if (!res.ok) throw new Error('Erro ao listar registos');
@@ -44,7 +48,10 @@ export const api = {
       return res.json();
     },
 
-    update: async (id: string, data: Partial<TimeRecord>): Promise<TimeRecord> => {
+    update: async (
+      id: string,
+      data: Partial<TimeRecord>
+    ): Promise<TimeRecord> => {
       const res = await fetch(`${API_URL}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -53,5 +60,5 @@ export const api = {
       if (!res.ok) throw new Error('Erro ao atualizar registo');
       return res.json();
     },
-  }
+  },
 };

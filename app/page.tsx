@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 import {
   BadgeCheck,
   CalendarRange,
@@ -12,113 +12,118 @@ import {
   LineChart,
   ShieldCheck,
   Users,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { StripeCheckoutButton } from "@/components/billing/stripe-checkout-button";
-import { DonationCheckoutForm } from "@/components/billing/donation-checkout-form";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { StripeCheckoutButton } from '@/components/billing/stripe-checkout-button';
+import { DonationCheckoutForm } from '@/components/billing/donation-checkout-form';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 const highlights = [
-  "Pensado para pequenas equipas e negócios em Portugal",
-  "Registo diário simples, com histórico e resumo mensal",
-  "Acesso online sem folhas Excel confusas",
+  'Pensado para pequenas equipas e negócios em Portugal',
+  'Registo diário simples, com histórico e resumo mensal',
+  'Acesso online sem folhas Excel confusas',
 ];
 
 const steps = [
   {
-    title: "Criar conta",
-    description: "Comece em minutos e deixe a equipa pronta para registar a jornada.",
+    title: 'Criar conta',
+    description:
+      'Comece em minutos e deixe a equipa pronta para registar a jornada.',
     icon: Users,
   },
   {
-    title: "Registar o dia",
-    description: "Marque entradas e saídas com rapidez, no computador ou no telemóvel.",
+    title: 'Registar o dia',
+    description:
+      'Marque entradas e saídas com rapidez, no computador ou no telemóvel.',
     icon: Clock3,
   },
   {
-    title: "Consultar o resumo",
-    description: "Veja histórico, totais e horas extra sem contas manuais.",
+    title: 'Consultar o resumo',
+    description: 'Veja histórico, totais e horas extra sem contas manuais.',
     icon: LineChart,
   },
 ];
 
 const pricingPlans = [
   {
-    key: "mensal" as const,
-    name: "Mensal",
-    price: "€2,50",
-    cadence: "/mês",
-    description: "Acesso contínuo com renovação automática mês a mês.",
-    cta: "Subscrever",
-    accent: "slate",
+    key: 'mensal' as const,
+    name: 'Mensal',
+    price: '€2,50',
+    cadence: '/mês',
+    description: 'Acesso contínuo com renovação automática mês a mês.',
+    cta: 'Subscrever',
+    accent: 'slate',
     features: [
-      "Acesso total a todas as ferramentas",
-      "Registo diário de entradas e saídas",
-      "Histórico completo e resumo de horas",
-      "Suporte standard por e-mail",
-      "Cancelamento gratuito a qualquer momento",
+      'Acesso total a todas as ferramentas',
+      'Registo diário de entradas e saídas',
+      'Histórico completo e resumo de horas',
+      'Suporte standard por e-mail',
+      'Cancelamento gratuito a qualquer momento',
     ],
   },
   {
-    key: "trimestral" as const,
-    name: "Trimestral",
-    price: "€5,00",
-    cadence: "/trimestre",
-    description: "Cobrado a cada 3 meses. Ideal para consistência a médio prazo.",
-    cta: "Subscrever",
-    accent: "blue",
+    key: 'trimestral' as const,
+    name: 'Trimestral',
+    price: '€5,00',
+    cadence: '/trimestre',
+    description:
+      'Cobrado a cada 3 meses. Ideal para consistência a médio prazo.',
+    cta: 'Subscrever',
+    accent: 'blue',
     featured: true,
     features: [
-      "Tudo o que está incluído no Mensal",
-      "Garantia de preço fixo por 3 meses",
-      "Maior estabilidade de planeamento",
-      "Suporte prioritário na comunidade",
+      'Tudo o que está incluído no Mensal',
+      'Garantia de preço fixo por 3 meses',
+      'Maior estabilidade de planeamento',
+      'Suporte prioritário na comunidade',
     ],
   },
   {
-    key: "anual" as const,
-    name: "Anual",
-    price: "€10,50",
-    cadence: "/ano",
-    description: "Pagamento único anual. O melhor valor para apoiar o projeto.",
-    cta: "Subscrever",
-    accent: "emerald",
+    key: 'anual' as const,
+    name: 'Anual',
+    price: '€10,50',
+    cadence: '/ano',
+    description: 'Pagamento único anual. O melhor valor para apoiar o projeto.',
+    cta: 'Subscrever',
+    accent: 'emerald',
     features: [
-      "Tudo o que está incluído no Trimestral",
+      'Tudo o que está incluído no Trimestral',
       "Selo/Distintivo de 'Apoiador Fundador'",
-      "Acesso antecipado a novas funcionalidades (Beta)",
-      "Canal direto de feedback com os criadores",
-      "Maior poupança financeira a longo prazo",
+      'Acesso antecipado a novas funcionalidades (Beta)',
+      'Canal direto de feedback com os criadores',
+      'Maior poupança financeira a longo prazo',
     ],
   },
 ];
 
 const faqs = [
   {
-    question: "Para quem é o Ponto Inteligente?",
+    question: 'Para quem é o Ponto Inteligente?',
     answer:
-      "Foi pensado para profissionais independentes, microempresas e pequenas equipas que querem controlar a jornada sem complicação.",
+      'Foi pensado para profissionais independentes, microempresas e pequenas equipas que querem controlar a jornada sem complicação.',
   },
   {
-    question: "Funciona bem para pequenas equipas?",
+    question: 'Funciona bem para pequenas equipas?',
     answer:
-      "Sim. A proposta atual é precisamente servir equipas pequenas com um fluxo simples, rápido e fácil de acompanhar.",
+      'Sim. A proposta atual é precisamente servir equipas pequenas com um fluxo simples, rápido e fácil de acompanhar.',
   },
   {
-    question: "Calcula horas extra?",
+    question: 'Calcula horas extra?',
     answer:
-      "Sim, o sistema apresenta o excedente acima da base diária configurada no resumo. Regras laborais específicas devem ser validadas no contexto de cada empresa.",
+      'Sim, o sistema apresenta o excedente acima da base diária configurada no resumo. Regras laborais específicas devem ser validadas no contexto de cada empresa.',
   },
   {
-    question: "Posso começar já?",
+    question: 'Posso começar já?',
     answer:
-      "Sim. Já pode criar conta e começar a usar a plataforma, enquanto a oferta comercial continua a evoluir.",
+      'Sim. Já pode criar conta e começar a usar a plataforma, enquanto a oferta comercial continua a evoluir.',
   },
 ];
 
 function AccentDot() {
-  return <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />;
+  return (
+    <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-400" />
+  );
 }
 
 export default function Home() {
@@ -144,7 +149,10 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="#pricing" className="hidden text-sm text-slate-300 transition hover:text-white sm:inline">
+            <Link
+              href="#pricing"
+              className="hidden text-sm text-slate-300 transition hover:text-white sm:inline"
+            >
               Ver preços
             </Link>
             <Link href="/time-record">
@@ -179,12 +187,16 @@ export default function Home() {
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
                 Software simples de controlo de ponto e registo de horas.
-                Registe entradas e saídas, consulte o histórico e acompanhe o resumo mensal sem complicação.
+                Registe entradas e saídas, consulte o histórico e acompanhe o
+                resumo mensal sem complicação.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="#pricing">
-                  <Button size="lg" className="min-w-48 rounded-full bg-blue-600 px-8 text-white hover:bg-blue-500">
+                  <Button
+                    size="lg"
+                    className="min-w-48 rounded-full bg-blue-600 px-8 text-white hover:bg-blue-500"
+                  >
                     <Euro className="mr-2 h-5 w-5" />
                     Ver preços
                   </Button>
@@ -225,7 +237,9 @@ export default function Home() {
                 <div className="flex items-center justify-between border-b border-white/10 pb-5">
                   <div>
                     <p className="text-sm text-slate-400">Resumo</p>
-                    <h2 className="mt-1 text-2xl font-semibold text-white">Visão rápida da jornada</h2>
+                    <h2 className="mt-1 text-2xl font-semibold text-white">
+                      Visão rápida da jornada
+                    </h2>
                   </div>
                   <BadgeCheck className="h-8 w-8 text-emerald-300" />
                 </div>
@@ -233,26 +247,44 @@ export default function Home() {
                 <div className="grid gap-4 py-6 sm:grid-cols-3">
                   <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-4">
                     <p className="text-sm text-blue-200">Horas registadas</p>
-                    <p className="mt-2 text-3xl font-semibold text-white">168h</p>
-                    <p className="mt-1 text-xs text-blue-100/80">exemplo mensal</p>
+                    <p className="mt-2 text-3xl font-semibold text-white">
+                      168h
+                    </p>
+                    <p className="mt-1 text-xs text-blue-100/80">
+                      exemplo mensal
+                    </p>
                   </div>
                   <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4">
                     <p className="text-sm text-amber-100">Horas extra</p>
-                    <p className="mt-2 text-3xl font-semibold text-white">12h</p>
-                    <p className="mt-1 text-xs text-amber-100/80">leitura rápida</p>
+                    <p className="mt-2 text-3xl font-semibold text-white">
+                      12h
+                    </p>
+                    <p className="mt-1 text-xs text-amber-100/80">
+                      leitura rápida
+                    </p>
                   </div>
                   <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
-                    <p className="text-sm text-emerald-100">Dias acompanhados</p>
+                    <p className="text-sm text-emerald-100">
+                      Dias acompanhados
+                    </p>
                     <p className="mt-2 text-3xl font-semibold text-white">21</p>
-                    <p className="mt-1 text-xs text-emerald-100/80">dados de exemplo</p>
+                    <p className="mt-1 text-xs text-emerald-100/80">
+                      dados de exemplo
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   {[
-                    ["Registo rápido", "Entradas e saídas com poucos cliques"],
-                    ["Histórico claro", "Conferência simples por dia e por mês"],
-                    ["Leitura imediata", "Resumo visual sem depender de folhas de cálculo"],
+                    ['Registo rápido', 'Entradas e saídas com poucos cliques'],
+                    [
+                      'Histórico claro',
+                      'Conferência simples por dia e por mês',
+                    ],
+                    [
+                      'Leitura imediata',
+                      'Resumo visual sem depender de folhas de cálculo',
+                    ],
                   ].map(([title, description]) => (
                     <div
                       key={title}
@@ -285,8 +317,12 @@ export default function Home() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500/25 to-emerald-400/25">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="mt-5 text-xl font-semibold text-white">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">{description}</p>
+                  <h3 className="mt-5 text-xl font-semibold text-white">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    {description}
+                  </p>
                 </Card>
               </motion.div>
             ))}
@@ -295,24 +331,26 @@ export default function Home() {
 
         <section id="pricing" className="py-20">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-200">Preços</p>
+            <p className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-200">
+              Preços
+            </p>
             <h2 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
               Planos simples para começar com clareza.
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-300">
-              Escolha o plano que melhor se adapta ao ritmo da sua atividade e comece a registar a jornada
-              sem complicação.
+              Escolha o plano que melhor se adapta ao ritmo da sua atividade e
+              comece a registar a jornada sem complicação.
             </p>
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {pricingPlans.map((plan, index) => {
               const accentClasses =
-                plan.accent === "blue"
-                  ? "border-blue-400/40 bg-blue-500/10"
-                  : plan.accent === "emerald"
-                    ? "border-emerald-400/35 bg-emerald-400/10"
-                    : "border-white/10 bg-white/5";
+                plan.accent === 'blue'
+                  ? 'border-blue-400/40 bg-blue-500/10'
+                  : plan.accent === 'emerald'
+                    ? 'border-emerald-400/35 bg-emerald-400/10'
+                    : 'border-white/10 bg-white/5';
 
               return (
                 <motion.div
@@ -324,7 +362,7 @@ export default function Home() {
                 >
                   <Card
                     className={`relative h-full rounded-[2rem] border p-7 backdrop-blur ${accentClasses} ${
-                      plan.featured ? "shadow-2xl shadow-blue-950/40" : ""
+                      plan.featured ? 'shadow-2xl shadow-blue-950/40' : ''
                     }`}
                   >
                     {plan.featured ? (
@@ -333,16 +371,27 @@ export default function Home() {
                       </div>
                     ) : null}
 
-                    <p className="text-sm uppercase tracking-[0.2em] text-slate-300">{plan.name}</p>
+                    <p className="text-sm uppercase tracking-[0.2em] text-slate-300">
+                      {plan.name}
+                    </p>
                     <div className="mt-5 flex items-end gap-1">
-                      <span className="text-5xl font-semibold text-white">{plan.price}</span>
-                      <span className="pb-2 text-slate-300">{plan.cadence}</span>
+                      <span className="text-5xl font-semibold text-white">
+                        {plan.price}
+                      </span>
+                      <span className="pb-2 text-slate-300">
+                        {plan.cadence}
+                      </span>
                     </div>
-                    <p className="mt-4 min-h-18 text-sm leading-7 text-slate-300">{plan.description}</p>
+                    <p className="mt-4 min-h-18 text-sm leading-7 text-slate-300">
+                      {plan.description}
+                    </p>
 
                     <ul className="mt-6 space-y-3">
                       {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3 text-sm text-slate-200">
+                        <li
+                          key={feature}
+                          className="flex items-start gap-3 text-sm text-slate-200"
+                        >
                           <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-300" />
                           <span>{feature}</span>
                         </li>
@@ -356,8 +405,8 @@ export default function Home() {
                         requireAuth
                         className={`w-full rounded-full ${
                           plan.featured
-                            ? "bg-blue-500 text-white hover:bg-blue-400"
-                            : "bg-white text-slate-900 hover:bg-slate-100"
+                            ? 'bg-blue-500 text-white hover:bg-blue-400'
+                            : 'bg-white text-slate-900 hover:bg-slate-100'
                         }`}
                       >
                         {plan.cta}
@@ -376,12 +425,17 @@ export default function Home() {
               <div className="max-w-2xl">
                 <div className="flex items-center gap-2 text-emerald-200">
                   <HeartHandshake className="h-5 w-5" />
-                  <span className="text-sm font-medium uppercase tracking-[0.2em]">Apoiar o projeto</span>
+                  <span className="text-sm font-medium uppercase tracking-[0.2em]">
+                    Apoiar o projeto
+                  </span>
                 </div>
-                <h2 className="mt-4 text-3xl font-semibold text-white">Quer ajudar a manter o Ponto Inteligente vivo?</h2>
+                <h2 className="mt-4 text-3xl font-semibold text-white">
+                  Quer ajudar a manter o Ponto Inteligente vivo?
+                </h2>
                 <p className="mt-4 text-sm leading-7 text-emerald-50/90">
-                  A doação é opcional e faz sentido como apoio ao projeto, para ajudar na evolução do produto,
-                  melhorias contínuas e novos recursos ao longo do tempo.
+                  A doação é opcional e faz sentido como apoio ao projeto, para
+                  ajudar na evolução do produto, melhorias contínuas e novos
+                  recursos ao longo do tempo.
                 </p>
               </div>
 
@@ -411,12 +465,25 @@ export default function Home() {
               viewport={{ once: true }}
               className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur"
             >
-              <p className="text-sm font-medium uppercase tracking-[0.2em] text-blue-200">O que já resolve</p>
-              <h2 className="mt-4 text-3xl font-semibold text-white">Tudo o que precisa para começar sem confusão.</h2>
+              <p className="text-sm font-medium uppercase tracking-[0.2em] text-blue-200">
+                O que já resolve
+              </p>
+              <h2 className="mt-4 text-3xl font-semibold text-white">
+                Tudo o que precisa para começar sem confusão.
+              </h2>
               <div className="mt-6 space-y-4 text-sm leading-7 text-slate-300">
-                <p>O Ponto Inteligente foi pensado para equipas que querem sair do Excel sem entrar num software pesado.</p>
-                <p>O foco está na rapidez do registo, clareza do histórico e leitura simples da jornada.</p>
-                <p>Uma experiência direta, prática e fácil de adotar no dia a dia.</p>
+                <p>
+                  O Ponto Inteligente foi pensado para equipas que querem sair
+                  do Excel sem entrar num software pesado.
+                </p>
+                <p>
+                  O foco está na rapidez do registo, clareza do histórico e
+                  leitura simples da jornada.
+                </p>
+                <p>
+                  Uma experiência direta, prática e fácil de adotar no dia a
+                  dia.
+                </p>
               </div>
             </motion.div>
 
@@ -433,8 +500,12 @@ export default function Home() {
                     <div className="flex items-start gap-4">
                       <CalendarRange className="mt-1 h-5 w-5 text-cyan-200" />
                       <div>
-                        <h3 className="text-lg font-semibold text-white">{faq.question}</h3>
-                        <p className="mt-2 text-sm leading-7 text-slate-300">{faq.answer}</p>
+                        <h3 className="text-lg font-semibold text-white">
+                          {faq.question}
+                        </h3>
+                        <p className="mt-2 text-sm leading-7 text-slate-300">
+                          {faq.answer}
+                        </p>
                       </div>
                     </div>
                   </Card>
@@ -452,17 +523,22 @@ export default function Home() {
             viewport={{ once: true }}
             className="rounded-[2.25rem] border border-white/10 bg-linear-to-r from-blue-600/20 via-cyan-400/10 to-emerald-400/20 px-8 py-10 text-center backdrop-blur"
           >
-            <p className="text-sm uppercase tracking-[0.2em] text-cyan-100">Começar agora</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-cyan-100">
+              Começar agora
+            </p>
             <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">
               Comece hoje a organizar a jornada da sua equipa.
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">
-              Crie conta, escolha o plano certo e acompanhe entradas, saídas e resumos mensais com mais
-              clareza e menos trabalho manual.
+              Crie conta, escolha o plano certo e acompanhe entradas, saídas e
+              resumos mensais com mais clareza e menos trabalho manual.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/register">
-                <Button size="lg" className="rounded-full bg-white px-8 text-slate-900 hover:bg-slate-100">
+                <Button
+                  size="lg"
+                  className="rounded-full bg-white px-8 text-slate-900 hover:bg-slate-100"
+                >
                   Criar conta
                 </Button>
               </Link>
@@ -489,7 +565,9 @@ export default function Home() {
         </section>
 
         <footer className="border-t border-white/10 py-8 text-center text-sm text-slate-400">
-          <p>© 2026 Clic Ponto. Registo simples e fiável da jornada de trabalho.</p>
+          <p>
+            © 2026 Clic Ponto. Registo simples e fiável da jornada de trabalho.
+          </p>
         </footer>
       </div>
     </div>

@@ -12,10 +12,10 @@ declare module 'next-auth' {
    */
   interface User {
     billingStatus?: string | null;
-  }  
+  }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   /** Retornado pelo callback `jwt` */
   interface JWT {
     id: string;

@@ -1,13 +1,13 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { LogOut } from "lucide-react"
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
 
 export function LogoutButton() {
   return (
-    <Button 
-      variant="ghost" 
+    <Button
+      variant="ghost"
       size="sm"
       className="text-muted-foreground hover:text-destructive gap-2"
       asChild // IMPORTANTE: permite que o Link se comporte como o Button
@@ -17,5 +17,5 @@ export function LogoutButton() {
         <span>Sair</span>
       </Link>
     </Button>
-  )
+  );
 }

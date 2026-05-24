@@ -1,4 +1,3 @@
-
 // export { default } from "next-auth/middleware";
 
 // import NextAuth from "next-auth/middleware";
@@ -12,8 +11,8 @@
 //   matcher: ["/time-record/:path*"],
 // };
 
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
 
 export default withAuth(
   function middleware(req) {
@@ -23,8 +22,12 @@ export default withAuth(
     // const isTryingToAccessApp = req.nextUrl.pathname.startsWith("/time-record");
 
     // Se estiver logado, mas NÃO for 'active' nem 'free_trial'
-    if (req.nextUrl.pathname.startsWith("/time-record") && status !== "active" && status !== "free_trial") {
-      return NextResponse.redirect(new URL("/billing", req.url));
+    if (
+      req.nextUrl.pathname.startsWith('/time-record') &&
+      status !== 'active' &&
+      status !== 'free_trial'
+    ) {
+      return NextResponse.redirect(new URL('/billing', req.url));
     }
 
     return NextResponse.next();
@@ -38,5 +41,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/time-record/:path*"],
+  matcher: ['/time-record/:path*'],
 };
