@@ -70,6 +70,13 @@
 FROM node:20-slim AS builder
 WORKDIR /app
 
+# --- AS VARIÁVEIS ENTRAM AQUI ---
+# Desativa a telemetria do Next.js para economizar rede/processamento no build
+ENV NEXT_TELEMETRY_DISABLED=1
+# Limita o uso de RAM física pelo Node.js para não travar o container
+ENV NODE_OPTIONS="--max-old-space-size=1200"
+# ---------------------------------
+
 RUN apt-get update -y && apt-get install -y openssl libssl-dev
 
 COPY package*.json ./
