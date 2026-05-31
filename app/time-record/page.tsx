@@ -221,15 +221,30 @@ export default function Home(): React.JSX.Element {
                   }
                 />
 
-                <div className="mt-4">
+                <div className="mt-6 flex justify-center w-full px-4 sm:px-0">
                   <button
                     onClick={() => setIsModalOpen(true)}
-                    className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-950 bg-slate-100 hover:bg-slate-200/80 px-4 py-2 rounded-xl transition-all"
+                    className="
+                      /* Base e Alinhamento */
+                      inline-flex items-center justify-center gap-2.5 w-full sm:w-auto 
+                      /* Espaçamento e Texto */
+                      px-6 py-3.5 sm:py-2.5 text-sm sm:text-xs font-semibold tracking-wide
+                      /* Cores e Tema Shadcn (Slate Moderno) */
+                      text-slate-900 bg-white dark:bg-slate-950 dark:text-slate-50
+                      /* Bordas, Sombras e Arredondamento (Estilo Glass/Shadcn) */
+                      border border-slate-200 dark:border-slate-800 rounded-xl
+                      shadow-sm shadow-slate-100/50 dark:shadow-none
+                      /* Transições e Estados Activos (Toque Mobile Perfeito) */
+                      transition-all duration-200
+                      hover:bg-slate-50 hover:text-slate-950 active:scale-[0.98]
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2
+                    "
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
+                    <Edit3 className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-slate-500 group-hover:text-slate-900 transition-colors" />
                     Lançar Jornadas Manualmente
                   </button>
                 </div>
+
               </>
             )}
           </TabsContent>
