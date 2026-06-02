@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
 import {
   Form,
   FormControl,
@@ -21,6 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -56,19 +58,22 @@ export default function ManualPunchModal({
 
   // 2. Sincronização de valores iniciais/salvos
   useEffect(() => {
-    // Se o modal fechar, resetamos o controlo de inicialização
+    // Se o modal fechar, resetamos o controlo e limpamos o formulário
     if (!isOpen) {
       isInitialized.current = false;
       return;
     }    
-    if (isOpen && defaultValues) {
+
+    // Só executa o reset se o modal estiver aberto E ainda não tiver sido inicializado
+    if (isOpen && defaultValues && !isInitialized.current) {
       form.reset({
         turno1_entrada: defaultValues.turno1_entrada || '',
         turno1_saida: defaultValues.turno1_saida || '',
         turno2_entrada: defaultValues.turno2_entrada || '',
         turno2_saida: defaultValues.turno2_saida || '',
       });
-      // Marca como inicializado para bloquear novos resets enquanto estiver aberto
+      
+      // Bloqueia permanentemente novos resets até o modal fechar
       isInitialized.current = true;      
     }
   }, [isOpen, defaultValues, form]);
@@ -81,7 +86,7 @@ export default function ManualPunchModal({
         <DialogHeader className="px-6 py-4 bg-slate-50 border-b border-slate-100 dark:bg-slate-900 dark:border-slate-800 flex flex-row items-center gap-2 space-y-0">
           <Clock className="w-5 h-5 text-slate-700 dark:text-slate-300" />
           <DialogTitle className="font-semibold text-slate-800 dark:text-slate-200">
-            Lançamento em Bloco
+            Lançamento Manual
           </DialogTitle>
         </DialogHeader>
 
@@ -94,7 +99,8 @@ export default function ManualPunchModal({
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Jornada 1
               </h4>
-              <div className="grid grid-cols-2 gap-3">
+              {/* CORREÇÃO: grid-cols-1 por padrão (mobile) e sm:grid-cols-2 para ecrãs maiores */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <FormField
                   control={form.control}
                   name="turno1_entrada"
@@ -102,7 +108,7 @@ export default function ManualPunchModal({
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-slate-600 dark:text-slate-400">Entrada</FormLabel>
                       <FormControl>
-                        <Input type="time" className="bg-white dark:bg-slate-950" {...field} />
+                        <Input type="time" className="bg-white dark:bg-slate-950 w-full" {...field} />
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
@@ -115,7 +121,7 @@ export default function ManualPunchModal({
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-slate-600 dark:text-slate-400">Saída</FormLabel>
                       <FormControl>
-                        <Input type="time" className="bg-white dark:bg-slate-950" {...field} />
+                        <Input type="time" className="bg-white dark:bg-slate-950 w-full" {...field} />
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
@@ -129,7 +135,8 @@ export default function ManualPunchModal({
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Jornada 2
               </h4>
-              <div className="grid grid-cols-2 gap-3">
+              {/* CORREÇÃO: grid-cols-1 por padrão (mobile) e sm:grid-cols-2 para ecrãs maiores */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <FormField
                   control={form.control}
                   name="turno2_entrada"
@@ -137,7 +144,7 @@ export default function ManualPunchModal({
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-slate-600 dark:text-slate-400">Entrada</FormLabel>
                       <FormControl>
-                        <Input type="time" className="bg-white dark:bg-slate-950" {...field} />
+                        <Input type="time" className="bg-white dark:bg-slate-950 w-full" {...field} />
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
@@ -150,7 +157,7 @@ export default function ManualPunchModal({
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-slate-600 dark:text-slate-400">Saída</FormLabel>
                       <FormControl>
-                        <Input type="time" className="bg-white dark:bg-slate-950" {...field} />
+                        <Input type="time" className="bg-white dark:bg-slate-950 w-full" {...field} />
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />
                     </FormItem>
@@ -160,13 +167,14 @@ export default function ManualPunchModal({
             </div>
 
             {/* Ações / Rodapé */}
-            <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+            {/* OTIMIZAÇÃO UX MOBILE: botões empilhados em ecrãs pequenos e em linha com sm:flex-row */}
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
               <Button
                 type="button"
                 variant="secondary"
                 onClick={onClose}
                 disabled={isPending}
-                className="rounded-xl"
+                className="rounded-xl w-full sm:w-auto"
               >
                 Cancelar
               </Button>
@@ -174,7 +182,7 @@ export default function ManualPunchModal({
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-slate-800 hover:bg-slate-700 text-white rounded-xl min-w-[100px] gap-2"
+                className="bg-slate-800 hover:bg-slate-700 text-white rounded-xl min-w-[100px] gap-2 w-full sm:w-auto"
               >
                 {isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -186,6 +194,7 @@ export default function ManualPunchModal({
 
           </form>
         </Form>
+
       </DialogContent>
     </Dialog>
   );
