@@ -1,10 +1,31 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth, { NextAuthOptions, DefaultSession, DefaultUser } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import { JWT } from "next-auth/jwt"
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      billingStatus?: string | null
+    } & DefaultSession["user"]
+  }
+
+  interface User extends DefaultUser {
+    billingStatus?: string | null
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string
+    billingStatus?: string | null
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -62,16 +83,27 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+// O objeto 'user' só existe no exato momento do login (Credentials)
       if (user) {
         token.id = user.id;
-        token.billingStatus = user.billingStatus;
+      }
+
+      // Procuramos sempre o status mais atualizado direto do PostgreSQL
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { billingStatus: true },
+        });
+
+        // Se por algum motivo estiver nulo no banco, assume 'free_trial' como fallback
+        token.billingStatus = dbUser?.billingStatus || 'free_trial';
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.billingStatus = token.billingStatus;
+        session.user.billingStatus = token.billingStatus as string;
       }
       return session;
     },
