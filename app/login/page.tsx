@@ -136,14 +136,14 @@ function LoginForm() {
           </button>
         </form>
 
-        <button
+{/*         <button
           type="button"
           onClick={handleEmailLogin}
           disabled={isLoading}
           className="w-full mt-3 text-slate-600 font-medium py-3 px-4 rounded-xl hover:bg-slate-50 transition-colors text-sm"
         >
           Enviar link de acesso por email
-        </button>
+        </button> */}
 
         <p className="text-center text-slate-500 text-sm mt-6">
           Não tem conta?{' '}

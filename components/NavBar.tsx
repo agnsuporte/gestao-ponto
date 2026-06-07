@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Menu, ReceiptText } from 'lucide-react';
+import { Menu, ReceiptText, PackageOpenIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -17,6 +17,11 @@ const navItems = [
     label: 'Gerir Faturação',
     href: '/billing',
     icon: <ReceiptText className="w-4 h-4 mr-2" />,
+  },
+  {
+    label: 'Sobre',
+    href: '/about',
+    icon: <PackageOpenIcon className="w-4 h-4 mr-2" />,
   },
 ];
 

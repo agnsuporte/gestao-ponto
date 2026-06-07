@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   Check,
   Sparkles,
+  ArrowLeft
 } from 'lucide-react';
 
 import { BillingPortalButton } from '@/components/billing/billing-portal-button';
@@ -15,6 +16,8 @@ import { StripeCheckoutButton } from '@/components/billing/stripe-checkout-butto
 import { Card } from '@/components/ui/card';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
+import { Button } from '@/components/ui/button';
+import { BackButton } from '@/components/BackButton';
 
 const plans = [
   {
@@ -57,7 +60,9 @@ export default async function BillingPage() {
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-100 px-4 py-10">
       <div className="mx-auto max-w-5xl space-y-8">
-        {/* NOVO: Aviso de Período de Teste Gratuito */}
+        
+        {/* Botão Voltar Otimizado para Mobile */}
+        <BackButton />
 
         <div className="space-y-3 text-center">
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
