@@ -12,11 +12,13 @@ declare module "next-auth" {
     user: {
       id: string
       billingStatus?: string | null
+      role?: string | null
     } & DefaultSession["user"]
   }
 
   interface User extends DefaultUser {
     billingStatus?: string | null
+    role?: string | null
   }
 }
 
@@ -24,27 +26,28 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     billingStatus?: string | null
+    role?: string | null
   }
 }
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
-    }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID!,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // }),
+    // EmailProvider({
+    //   server: {
+    //     host: process.env.EMAIL_SERVER_HOST,
+    //     port: Number(process.env.EMAIL_SERVER_PORT),
+    //     auth: {
+    //       user: process.env.EMAIL_SERVER_USER,
+    //       pass: process.env.EMAIL_SERVER_PASSWORD,
+    //     },
+    //   },
+    //   from: process.env.EMAIL_FROM,
+    // }),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -83,7 +86,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-// O objeto 'user' só existe no exato momento do login (Credentials)
+      // O objeto 'user' só existe no exato momento do login (Credentials)
       if (user) {
         token.id = user.id;
       }
@@ -92,11 +95,14 @@ export const authOptions: NextAuthOptions = {
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { billingStatus: true },
+          select: { billingStatus: true, email: true }, // Buscamos também o email
         });
 
         // Se por algum motivo estiver nulo no banco, assume 'free_trial' como fallback
         token.billingStatus = dbUser?.billingStatus || 'free_trial';
+
+        // Define o papel (role) diretamente no Token JWT de forma segura no servidor
+        token.role = dbUser?.email === process.env.ADMIN_EMAIL ? "admin" : "user";
       }
       return token;
     },
@@ -104,6 +110,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.billingStatus = token.billingStatus as string;
+        // Expõe a role para o cliente através da sessão do NextAuth
+        session.user.role = token.role as string; 
       }
       return session;
     },
