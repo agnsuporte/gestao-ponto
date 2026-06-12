@@ -14,6 +14,8 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
+import Image from "next/image";
+
 import { LogoutButton } from '@/components/LogoutButton';
 
 const baseNavItems = [
@@ -43,7 +45,19 @@ export function Navbar() {
 
   return (
     <nav className="flex w-full p-4 items-center justify-between">
-      <div className="flex-1" />
+            {/* Logomarca inserida à esquerda no espaço que estava vazio */}
+      <div className="flex-1 flex items-center">
+        <Link href="/" className="flex items-center gap-2">
+          <Image   
+            src="/clic-ponto-transp.png" 
+            alt="Clic Ponto Logomarca" 
+            width={100} // Ajuste a largura conforme necessário
+            height={30} // Ajuste a altura proporcionalmente
+            className="object-contain"
+            priority // Carrega a imagem com prioridade por estar acima da dobra
+          />
+        </Link>
+      </div>
 
       {/* Desktop */}
       <div className="hidden sm:flex items-center gap-4">
