@@ -175,7 +175,7 @@ export default function Home() {
             <div>
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">
                 <AccentDot />
-                Beta pago para pequenas equipas em Portugal
+                Beta pago para pequenas equipas e profissionais independentes
               </div>
 
               <h1 className="max-w-3xl text-5xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">

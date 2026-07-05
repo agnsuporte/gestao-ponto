@@ -26,6 +26,12 @@ export function formatMinutesToTime(
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
+interface DailyOvertimeSplit {
+  totalMinutes: number;
+  overtimeMinutes50: number; // Primeira hora extra do dia útil
+  overtimeMinutes75: number; // Segunda hora extra em diante do dia útil
+}
+
 export function calculateDailyWorkMinutes(
   record: TimeRecord | null | undefined
 ): { total: number; overtime: number } {
@@ -71,3 +77,84 @@ export function calculateMonthlyStats(records: TimeRecord[]): MonthlyStats {
     daysWorked: records.filter((r) => (r.total_minutes || 0) > 0).length,
   };
 }
+
+interface DailyOvertimeSplit {
+  totalMinutes: number;
+  overtimeMinutes50: number; // Primeira hora extra do dia útil
+  overtimeMinutes75: number; // Segunda hora extra em diante do dia útil
+}
+
+/**
+ * Calcula os minutos de trabalho e divide o overtime seguindo a lei portuguesa
+ * para quem já ultrapassou as 100 horas anuais num dia útil.
+ */
+export function calculateDailyWorkMinutesSplit(
+  record: TimeRecord | null | undefined
+): DailyOvertimeSplit {
+  if (!record) return { totalMinutes: 0, overtimeMinutes50: 0, overtimeMinutes75: 0 };
+  
+  let totalMinutes = 0;
+
+  const t1Entrada = parseTime(record.turno1_entrada);
+  const t1Saida = parseTime(record.turno1_saida);
+  if (t1Entrada !== null && t1Saida !== null) {
+    totalMinutes += Math.max(0, t1Saida - t1Entrada);
+  }
+
+  const t2Entrada = parseTime(record.turno2_entrada);
+  const t2Saida = parseTime(record.turno2_saida);
+  if (t2Entrada !== null && t2Saida !== null) {
+    totalMinutes += Math.max(0, t2Saida - t2Entrada);
+  }
+
+  const totalOvertimeMinutes = Math.max(0, totalMinutes - DAILY_MINUTES);
+
+  let overtimeMinutes50 = 0;
+  let overtimeMinutes75 = 0;
+
+  if (totalOvertimeMinutes > 0) {
+    // 60 minutos equivalem à primeira hora extra efetuada no dia
+    if (totalOvertimeMinutes <= 60) {
+      overtimeMinutes50 = totalOvertimeMinutes;
+    } else {
+      overtimeMinutes50 = 60;
+      overtimeMinutes75 = totalOvertimeMinutes - 60; // O restante vai para o escalão seguinte
+    }
+  }
+
+  return {
+    totalMinutes,
+    overtimeMinutes50,
+    overtimeMinutes75,
+  };
+}
+
+export function calculateSalaryMetrics(baseSalary: number) {
+  // Fórmula legal portuguesa (40h semanais)
+  const hourlyRate = (baseSalary * 12) / 2080;
+  
+  // Subsídios em duodécimos (1/12 do salário)
+  const holidayBonus = baseSalary / 12;
+  const christmasBonus = baseSalary / 12;
+
+  return {
+    hourlyRate: Number(hourlyRate.toFixed(2)),
+    holidayBonus: Number(holidayBonus.toFixed(2)),
+    christmasBonus: Number(christmasBonus.toFixed(2)),
+  };
+}
+
+// export function calculateSalaryMetrics(baseSalary: number) {
+//   // Fórmula legal portuguesa (40h semanais)
+//   const hourlyRate = (baseSalary * 12) / 2080;
+  
+//   // Subsídios em duodécimos (2.5 dias por mês equivalem a 1/12 do salário)
+//   const holidayBonus = baseSalary / 12;
+//   const christmasBonus = baseSalary / 12;
+
+//   return {
+//     hourlyRate: Number(hourlyRate.toFixed(2)),
+//     holidayBonus: Number(holidayBonus.toFixed(2)),
+//     christmasBonus: Number(christmasBonus.toFixed(2)),
+//   };
+// }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Providers, AuthProvider } from './providers';
 
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://clicponto.com'),
@@ -59,6 +60,7 @@ export default function RootLayout({
           {' '}
           <Providers>{children}</Providers>{' '}
         </AuthProvider>
+        <Toaster position="bottom-center" richColors />
       </body>
     </html>
   );

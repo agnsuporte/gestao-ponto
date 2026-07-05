@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from 'next/link';
-import { Menu, ReceiptText, PackageOpenIcon, MailIcon } from 'lucide-react';
+import { Menu, ReceiptText, PackageOpenIcon, MailIcon, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 
@@ -18,7 +18,9 @@ import Image from "next/image";
 
 import { LogoutButton } from '@/components/LogoutButton';
 
+// Adicionado o item "Recibos" disponível para todos os utilizadores autenticados
 const baseNavItems = [
+  { label: 'Recibos', href: '/payslips', icon: <Wallet className="w-4 h-4 mr-2" /> },
   { label: 'Gerir Faturação', href: '/billing', icon: <ReceiptText className="w-4 h-4 mr-2" /> },
   { label: 'Sobre', href: '/about', icon: <PackageOpenIcon className="w-4 h-4 mr-2" /> },
 ];
@@ -31,7 +33,6 @@ export function Navbar() {
     setMounted(true);
   }, []);
 
-  // Agora validamos pelo papel (role) injetado com segurança pelo NextAuth
   const isAdmin = mounted && session?.user?.role === "admin"; 
 
   const navItems = [...baseNavItems];
@@ -45,16 +46,15 @@ export function Navbar() {
 
   return (
     <nav className="flex w-full p-4 items-center justify-between">
-            {/* Logomarca inserida à esquerda no espaço que estava vazio */}
       <div className="flex-1 flex items-center">
         <Link href="/" className="flex items-center gap-2">
           <Image   
             src="/clic-ponto-transp.png" 
             alt="Clic Ponto Logomarca" 
-            width={100} // Ajuste a largura conforme necessário
-            height={30} // Ajuste a altura proporcionalmente
+            width={100} 
+            height={30} 
             className="object-contain"
-            priority // Carrega a imagem com prioridade por estar acima da dobra
+            priority 
           />
         </Link>
       </div>

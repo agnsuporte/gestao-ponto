@@ -4,6 +4,32 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// -----------------------------------------------------------------------------
+// ENUMS PARA O PERFIL FISCAL (IRS PORTUGAL)
+// -----------------------------------------------------------------------------
+
+enum TaxRegion {
+  CONTINENTE
+  MADEIRA
+  ACORES
+}
+
+enum MaritalStatus {
+  NAO_CASADO                  // Solteiro, Viúvo, Divorciado
+  CASADO_UNICO_TITULAR
+  CASADO_DOIS_TITULARES
+}
+
+enum MealAllowanceType {
+  DINHEIRO                    // Limite de isenção de IRS/SS mais baixo
+  CARTAO                      // Limite de isenção de IRS/SS mais alto
+}
+
+enum LineType {
+  ABONO
+  DESCONTO
+}
+
 // generator client {
 //   provider = "prisma-client-js"
 //   //  output   = "generated/prisma"
@@ -89,4 +115,59 @@ model TimeRecord {
   @@index([date])
   @@index([userId])
   @@unique([userId, date])
+}
+
+// -----------------------------------------------------------------------------
+// DEFINIÇÕES SALARIAIS E FISCAIS DO UTILIZADOR
+// -----------------------------------------------------------------------------
+
+model UserSalarySettings {
+  id                 String            @id @default(cuid())
+  userId             String            @unique
+  baseSalary         Decimal           @db.Decimal(10, 2) @default(900.00)
+  hasHolidayBonus    Boolean           @default(true)
+  hasChristmasBonus  Boolean           @default(true)
+  gratification      Decimal           @db.Decimal(10, 2) @default(0.00)
+  
+  // Perfil Fiscal para Escalões de IRS Dinâmicos
+  taxRegion          TaxRegion         @default(CONTINENTE)
+  maritalStatus      MaritalStatus     @default(NAO_CASADO)
+  dependentsCount    Int               @default(0)
+
+  // Configurações do Subsídio de Alimentação
+  mealAllowanceValue Decimal           @db.Decimal(10, 2) @default(0.00)
+  mealAllowanceType  MealAllowanceType @default(CARTAO)
+
+  updatedAt          DateTime          @updatedAt
+}
+
+model Payslip {
+  id              String        @id @default(cuid())
+  userId          String        // Relacionado com o seu sistema de Users
+  month           Int           // 1 a 12
+  year            Int
+  baseSalary      Decimal       @db.Decimal(10, 2) // Ex: 900.00
+  totalGross      Decimal       @db.Decimal(10, 2) // Ex: 1530.00
+  totalDeductions Decimal       @db.Decimal(10, 2) // Ex: 242.32
+  netSalary       Decimal       @db.Decimal(10, 2) // Total Líquido (1368.49)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  lines           PayslipLine[]
+
+  @@unique([userId, month, year]) // Impede recibos duplicados para o mesmo mês
+  @@index([userId])
+}
+
+model PayslipLine {
+  id          String   @id @default(cuid())
+  payslipId   String
+  payslip     Payslip  @relation(fields: [payslipId], references: [id], onDelete: Cascade)
+  code        String   // Ex: "001", "301"
+  description String   // Ex: "Vencimento", "Segurança Social"
+  type        LineType // ABONO ou DESCONTO
+  quantity    Decimal? @db.Decimal(10, 2) // Dias ou Horas (Ex: 30.00 ou 18.00)
+  unitValue   Decimal? @db.Decimal(10, 2) // Valor Unitário (Ex: 31.83)
+  rate        Decimal? @db.Decimal(5, 2)  // Percentagem / Taxa (Ex: 11.00 ou 7.78)
+  baseValue   Decimal? @db.Decimal(10, 2) // Base de incidência (Ex: 1302.92)
+  totalValue  Decimal  @db.Decimal(10, 2) // Valor Final (Ex: 955.00, 143.32)
 }
