@@ -137,6 +137,7 @@ model UserSalarySettings {
   // Configurações do Subsídio de Alimentação
   mealAllowanceValue Decimal           @db.Decimal(10, 2) @default(0.00)
   mealAllowanceType  MealAllowanceType @default(CARTAO)
+  mealAllowanceDays    Int               @default(22) // 👈 ADICIONAR ESTA LINHA (Valor padrão de dias úteis)
 
   updatedAt          DateTime          @updatedAt
 }

@@ -3,7 +3,9 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
-import { calculateDailyWorkMinutesSplit, calculateSalaryMetrics } from "@/lib/WorkHoursUtils"; 
+import { revalidatePath } from "next/cache";
+
+import { calculateSalaryMetrics } from "@/lib/WorkHoursUtils"; 
 import { calculateDynamicIrs } from "@/lib/IrsTablesUtils";
 import { TimeRecord } from "@/types/timeRecord";
 
@@ -28,34 +30,34 @@ export interface PayslipDraftResponse {
 
 export async function generatePayslipDraft(
   month: number, 
-  year: number, 
-  workedDaysInput?: number // Input opcional dos dias para subsídio de alimentação
+  year: number
 ): Promise<PayslipDraftResponse | null> {
+  // Forçar limpeza de cache do Next.js para garantir dados frescos do mês selecionado
+  revalidatePath("/payslips");
+
   const session = await getServerSession(authOptions);
-  
   if (!session || !session.user) {
     throw new Error("Não autorizado. Sessão expirada ou inválida.");
   }
 
   const userId = session.user.id; 
 
-  // 1. Procurar definições salariais e fiscais do utilizador
+  // 1. Procurar definições salariais e fiscais do utilizador na BD
   const settings = await prisma.userSalarySettings.findUnique({
     where: { userId },
   });
 
-  if (!settings) {
-    return null; 
-  }
+  if (!settings) return null; 
 
   const baseSalary = Number(settings.baseSalary);
   const gratification = Number(settings.gratification);
   const mealValueDiario = Number(settings.mealAllowanceValue);
-  
   const metrics = calculateSalaryMetrics(baseSalary);
-  const hourlyRate = metrics.hourlyRate;
 
-  // 2. Procurar todos os registos do mês na BD para calcular horas e dias úteis
+  // Fórmula Oficial de Recursos Humanos em Portugal (4 casas decimais para evitar desvios)
+  const valorHoraExato = Number(((baseSalary * 12) / (52 * 40)).toFixed(4));
+
+  // 2. Procurar todos os registos do mês na BD para cálculo automático de horas extra e dias trabalhados
   const datePrefix = `${year}-${String(month).padStart(2, "0")}`;
   const dbRecords = await prisma.timeRecord.findMany({
     where: {
@@ -64,30 +66,34 @@ export async function generatePayslipDraft(
     },
   });
 
-  let totalExtraHours50 = 0;
-  let totalExtraHours75 = 0;
+  let totalOvertimeMinutesFromDB = 0; 
   let autoWorkedDays = 0;
 
   for (const dbRecord of dbRecords) {
     const record: TimeRecord = dbRecord as unknown as TimeRecord;
-    
-    // Incrementa dias trabalhados se houver registo de tempo
-    if (record.total_minutes && record.total_minutes > 0) {
-      autoWorkedDays++;
-    }
-    
-    // Executa a nova divisão diária correta (60 min a 50%, o resto a 75%)
-    const { overtimeMinutes50, overtimeMinutes75 } = calculateDailyWorkMinutesSplit(record);
-
-    totalExtraHours50 += overtimeMinutes50 / 60;
-    totalExtraHours75 += overtimeMinutes75 / 60;
+    if (record.total_minutes && record.total_minutes > 0) autoWorkedDays++;
+    if (record.overtime_minutes) totalOvertimeMinutesFromDB += record.overtime_minutes;
   }
 
-  // Define os dias para subsídio de alimentação (usa o input do user ou a contagem automática)
-  const finalMealDays = workedDaysInput !== undefined ? workedDaysInput : autoWorkedDays;
+  // Define os dias de subsídio de alimentação de acordo com o perfil ou dias reais picados
+  const finalMealDays = settings.mealAllowanceDays !== undefined && settings.mealAllowanceDays !== null
+    ? Number(settings.mealAllowanceDays)
+    : autoWorkedDays;
 
-  const finalHours50 = Number(totalExtraHours50.toFixed(2));
-  const finalHours75 = Number(totalExtraHours75.toFixed(2));
+  // Conversão exata de minutos acumulados para horas decimais
+  const totalOvertimeHours = totalOvertimeMinutesFromDB / 60;
+
+  // 3. Aplicação do Teto de 20h (Mecânica Legal: Primeiras 20h a 50%, restante a 75%)
+  let finalHours50 = 0;
+  let finalHours75 = 0;
+ 
+  if (totalOvertimeHours <= 20) {
+    finalHours50 = Number(totalOvertimeHours.toFixed(2));
+    finalHours75 = 0;
+  } else {
+    finalHours50 = 20;
+    finalHours75 = Number((totalOvertimeHours - 20).toFixed(2));
+  }
 
   const lines: PayslipLineDraft[] = [];
 
@@ -101,14 +107,14 @@ export async function generatePayslipDraft(
     totalValue: baseSalary,
   });
 
-  // Linhas 002 e 003: Subsídios em Duodécimos
+  // Linhas 002 e 003: Duodécimos Dinâmicos
   if (settings.hasHolidayBonus) {
     lines.push({
       code: "002",
       description: "Subsídio Férias (Duodécimos)",
       type: "ABONO",
       quantity: 2.5,
-      totalValue: metrics.holidayBonus,
+      totalValue: Number(metrics.holidayBonus.toFixed(2)),
     });
   }
 
@@ -118,11 +124,11 @@ export async function generatePayslipDraft(
       description: "Subsídio Natal (Duodécimos)",
       type: "ABONO",
       quantity: 2.5,
-      totalValue: metrics.christmasBonus,
+      totalValue: Number(metrics.christmasBonus.toFixed(2)),
     });
   }
 
-  // Linha 060: Gratificações
+  // Linha 060: Gratificações Dinâmicas (Só entra se configurada nas definições do utilizador)
   if (gratification > 0) {
     lines.push({
       code: "060",
@@ -132,58 +138,54 @@ export async function generatePayslipDraft(
     });
   }
 
-  // Linhas 201 e 202: Horas Extra processadas pelo novo algoritmo diário
+  // Linhas 201 e 202: Horas Extra Dinâmicas com Precisão Legal
   if (finalHours50 > 0) {
-    const unitValue50 = Number((hourlyRate * 1.5).toFixed(2));
+    const unitValue50 = Number((valorHoraExato * 1.5).toFixed(4));
     lines.push({
       code: "201",
       description: "Horas Extras (50%)",
       type: "ABONO",
       quantity: finalHours50,
-      unitValue: unitValue50,
+      unitValue: Number(unitValue50.toFixed(2)),
       totalValue: Number((finalHours50 * unitValue50).toFixed(2)),
     });
   }
 
   if (finalHours75 > 0) {
-    const unitValue75 = Number((hourlyRate * 1.75).toFixed(2));
+    const unitValue75 = Number((valorHoraExato * 1.75).toFixed(4));
     lines.push({
       code: "202",
       description: "Horas Extras (75%)",
       type: "ABONO",
       quantity: finalHours75,
-      unitValue: unitValue75,
+      unitValue: Number(unitValue75.toFixed(2)),
       totalValue: Number((finalHours75 * unitValue75).toFixed(2)),
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // PROCESSAMENTO DO SUBSÍDIO DE ALIMENTAÇÃO (LEGISLADO EM PORTUGAL)
-  // ---------------------------------------------------------------------------
+  // Linhas 110 e 111: Subsídio de Alimentação Dinâmico baseado no teto do Modo Cartão/Dinheiro
   let tributavelSubAlim = 0;
+  let valorIsentoDoSub = 0;
 
   if (finalMealDays > 0 && mealValueDiario > 0) {
-    // Define o limite legal de isenção com base no tipo de pagamento
     const IsencaoLimite = settings.mealAllowanceType === "CARTAO" ? 9.60 : 6.00;
-    
     const totalSubAlim = Number((finalMealDays * mealValueDiario).toFixed(2));
     
     if (mealValueDiario <= IsencaoLimite) {
-      // 100% Isento de impostos
+      valorIsentoDoSub = totalSubAlim;
       lines.push({
         code: "110",
-        description: `Subsídio de Alimentação (Isento - ${settings.mealAllowanceType})`,
+        description: `Subsídio de Alimentação`,
         type: "ABONO",
-        quantity: 20, //finalMealDays,
+        quantity: finalMealDays,
         unitValue: mealValueDiario,
         totalValue: totalSubAlim,
       });
     } else {
-      // Ultrapassou o limite: divide a parte isenta da parte sujeita a IRS/SS
       const valorIsentoDiario = IsencaoLimite;
       const valorTributavelDiario = mealValueDiario - IsencaoLimite;
 
-      const totalIsento = Number((finalMealDays * valorIsentoDiario).toFixed(2));
+      valorIsentoDoSub = Number((finalMealDays * valorIsentoDiario).toFixed(2));
       tributavelSubAlim = Number((finalMealDays * valorTributavelDiario).toFixed(2));
 
       lines.push({
@@ -192,12 +194,12 @@ export async function generatePayslipDraft(
         type: "ABONO",
         quantity: finalMealDays,
         unitValue: valorIsentoDiario,
-        totalValue: totalIsento,
+        totalValue: valorIsentoDoSub,
       });
 
       lines.push({
         code: "111",
-        description: `Subsídio de Alimentação (Sujeito a IRS/SS)`,
+        description: `Subsídio de Alimentação (Sujeito)`,
         type: "ABONO",
         quantity: finalMealDays,
         unitValue: valorTributavelDiario,
@@ -207,51 +209,62 @@ export async function generatePayslipDraft(
   }
 
   // ---------------------------------------------------------------------------
-  // CÁLCULO DOS TOTAIS E DEDUÇÕES FISCAIS
+  // PROCESSAMENTO SEGURO DE DESCONTOS (TOTALMENTE ALGORÍTMICO)
   // ---------------------------------------------------------------------------
   
-  // O total bruto inclui absolutamente todos os abonos (isentos e não isentos)
   const totalGross = lines
     .filter(l => l.type === "ABONO")
     .reduce((sum, l) => sum + l.totalValue, 0);
 
-  // A base de incidência para Segurança Social e IRS EXCLUI a parte isenta do Subsídio de Alimentação
-  // Ou seja: Bruto Tributável = Total Bruto - Parte Isenta (Código 110 se existir)
-  const linhaIsenta = lines.find(l => l.code === "110");
-  const valorIsentoDoSub = linhaIsenta ? linhaIsenta.totalValue : 0;
-  const brutoTributavel = Math.max(0, totalGross - valorIsentoDoSub);
+  // Códigos que por lei sofrem desconto de Segurança Social (11%)
+  const codigosSujeitosSS = ["001", "002", "003", "201", "202", "111"];
+  const ssBaseIncidence = Number(
+    lines
+      .filter(l => l.type === "ABONO" && codigosSujeitosSS.includes(l.code))
+      .reduce((sum, l) => sum + l.totalValue, 0)
+      .toFixed(2)
+  );
 
-  // 1. Desconto da Segurança Social (11%) sobre a base tributável
-  const ssTotalValue = Number((brutoTributavel * 0.11).toFixed(2));
+  const ssTotalValue = Number((ssBaseIncidence * 0.11).toFixed(2));
+  
   lines.push({
     code: "301",
     description: "Segurança Social",
     type: "DESCONTO",
     rate: 11.00,
-    baseValue: brutoTributavel,
+    baseValue: ssBaseIncidence,
     totalValue: ssTotalValue,
   });
 
-  // 2. Desconto do IRS Dinâmico e Progressivo
-  const irsFiscallResult = calculateDynamicIrs({
-    brutoTributavel,
+  // Códigos que por lei sofrem retenção na fonte de IRS
+  const codigosSujeitosIRS = [...codigosSujeitosSS, "060"];
+  const brutoTributavelIRS = Number(
+    lines
+      .filter(l => l.type === "ABONO" && codigosSujeitosIRS.includes(l.code))
+      .reduce((sum, l) => sum + l.totalValue, 0)
+      .toFixed(2)
+  );
+
+  // Chamada à função genérica de cálculo de IRS
+  const irsFiscalResult = calculateDynamicIrs({
+    brutoTributavel: brutoTributavelIRS,
     maritalStatus: settings.maritalStatus,
     dependentsCount: settings.dependentsCount,
     region: settings.taxRegion,
   });
 
-  if (irsFiscallResult.finalTaxValue > 0) {
+  if (irsFiscalResult.finalTaxValue > 0) {
     lines.push({
       code: "305",
-      description: `Retenção na Fonte de IRS (${irsFiscallResult.effectiveRate}%)`,
+      description: `Retenção na Fonte de IRS (${irsFiscalResult.effectiveRate}%)`,
       type: "DESCONTO",
-      rate: irsFiscallResult.effectiveRate,
-      baseValue: brutoTributavel,
-      totalValue: irsFiscallResult.finalTaxValue,
+      rate: irsFiscalResult.effectiveRate,
+      baseValue: brutoTributavelIRS,
+      totalValue: irsFiscalResult.finalTaxValue,
     });
   }
 
-  const totalDeductions = Number((ssTotalValue + irsFiscallResult.finalTaxValue).toFixed(2));
+  const totalDeductions = Number((ssTotalValue + irsFiscalResult.finalTaxValue).toFixed(2));
   const netSalary = Number((totalGross - totalDeductions).toFixed(2));
 
   return {

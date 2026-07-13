@@ -130,19 +130,21 @@ export function calculateDailyWorkMinutesSplit(
 }
 
 export function calculateSalaryMetrics(baseSalary: number) {
-  // Fórmula legal portuguesa (40h semanais)
+  // Fórmula legal portuguesa (40h semanais: 52 semanas * 40h = 2080h anuais)
   const hourlyRate = (baseSalary * 12) / 2080;
   
-  // Subsídios em duodécimos (1/12 do salário)
+  // Subsídios em duodécimos puros (1/12 do salário base)
   const holidayBonus = baseSalary / 12;
   const christmasBonus = baseSalary / 12;
 
   return {
-    hourlyRate: Number(hourlyRate.toFixed(2)),
+    // 🛡️ Mantém as 4 casas decimais para evitar desvios cumulativos em multiplicações
+    hourlyRate: Number(hourlyRate.toFixed(4)), // Ex: 5.5096 em vez de 5.51
     holidayBonus: Number(holidayBonus.toFixed(2)),
     christmasBonus: Number(christmasBonus.toFixed(2)),
   };
 }
+
 
 // export function calculateSalaryMetrics(baseSalary: number) {
 //   // Fórmula legal portuguesa (40h semanais)

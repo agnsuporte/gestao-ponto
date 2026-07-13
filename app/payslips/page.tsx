@@ -7,10 +7,6 @@ import { PayslipCalculator } from "./_components/payslip-calculator";
 import { SalarySettingsForm } from "./_components/salary-settings";
 import { getPayslipsHistory } from "./_actions/get-payslips"
 
-// app/payslips/page.tsx
-
-// ... todos os teus imports anteriores (prisma, getServerSession, etc.)
-
 export default async function PayslipsPage() {
   const session = await getServerSession(authOptions);
 

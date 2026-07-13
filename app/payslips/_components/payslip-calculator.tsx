@@ -4,12 +4,11 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { generatePayslipDraft, PayslipDraftResponse } from "../_actions/generate-draft";
-import { savePayslip } from "../_actions/save-payslip";
+import { savePayslip } from "../_actions/save-payslip"; 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, History } from "lucide-react";
+import { Loader2, CheckCircle2, History, SlidersHorizontal } from "lucide-react";
 
-// Importações das novas partes menores
 import { PayslipHeader } from "./payslip-header";
 import { PayslipView } from "./payslip-view";
 import { PayslipHistoryList } from "./payslip-history";
@@ -22,7 +21,7 @@ interface PayslipCalculatorProps {
 
 export function PayslipCalculator({ salarySettings, initialHistory }: PayslipCalculatorProps) {
   const router = useRouter();
-  const [loading, setLoading] = React.useState(false);
+  const [isPending, startTransition] = React.useTransition(); 
   const [saving, setSaving] = React.useState(false);
   const [draft, setDraft] = React.useState<PayslipDraftResponse | null>(null);
 
@@ -30,18 +29,29 @@ export function PayslipCalculator({ salarySettings, initialHistory }: PayslipCal
   const [month, setMonth] = React.useState<string>(String(now.getMonth() + 1));
   const [year, setYear] = React.useState<string>(String(now.getFullYear()));
 
-  const loadDraft = React.useCallback(async () => {
-    setLoading(true);
+  // Altere o estado inicial para '6' para abrir diretamente no mês do recibo de teste
+// const [month, setMonth] = React.useState<string>("6");
+// const [year, setYear] = React.useState<string>("2026");
+
+
+
+const loadDraft = React.useCallback(() => {
+  startTransition(async () => {
     try {
-      const data = await generatePayslipDraft(Number(month), Number(year));
+      // Deixe APENAS o mês e o ano. Remova o número 6!
+      const data = await generatePayslipDraft(
+        Number(month), 
+        Number(year)
+      );
       setDraft(data);
     } catch (error) {
+      console.log("Erro ao gerar a previsão do recibo:", error);
       toast.error("Erro ao gerar a previsão do recibo.");
       setDraft(null);
-    } finally { // <-- Corrigido aqui de 'finaly' para 'finally'
-      setLoading(false);
     }
-  }, [month, year]);
+  });
+}, [month, year]); // O array de dependências fica limpo e correto
+
 
   React.useEffect(() => {
     loadDraft();
@@ -65,7 +75,7 @@ export function PayslipCalculator({ salarySettings, initialHistory }: PayslipCal
 
       if (result.success) {
         toast.success(`O recibo de ${month}/${year} foi guardado com sucesso!`);
-        router.refresh(); // Atualiza a lista do histórico instantaneamente
+        router.refresh(); 
       } else {
         throw new Error(result.error);
       }
@@ -79,7 +89,6 @@ export function PayslipCalculator({ salarySettings, initialHistory }: PayslipCal
   return (
     <div className="mx-auto max-w-md p-4 pb-32 space-y-6 animate-in fade-in duration-300">
       
-      {/* Renderiza o Topo (Parte 1) */}
       <PayslipHeader 
         salarySettings={salarySettings}
         month={month}
@@ -89,17 +98,26 @@ export function PayslipCalculator({ salarySettings, initialHistory }: PayslipCal
         onSettingsSaved={loadDraft}
       />
 
-      {/* Estados de Carregamento ou Visualização (Parte 2) */}
-      {loading ? (
+
+      {isPending ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-2 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm">A processar turnos reais...</p>
+          <p className="text-sm">A processar turnos reais ao cêntimo...</p>
         </div>
       ) : draft ? (
         <>
           <PayslipView draft={draft} />
 
-          {/* Botão Fixo Inferior Otimizado para Mobile */}
+          {/* TEXTO DE AVISO DE SIMULAÇÃO (DISCLAIMER LEGAL) */}
+          <div className="rounded-xl p-3 bg-muted/40 border border-muted text-muted-foreground text-[11px] leading-relaxed text-center space-y-1">
+            <p>
+              ⚠️ <strong>Aviso de Simulação:</strong> Os valores apresentados são aproximados e servem exclusivamente como uma perspetiva indicativa do vencimento prático.
+            </p>
+            <p>
+              O cálculo final pode variar dependendo de retroativos, parametrizações específicas de RH ou alterações das tabelas de retenção na fonte oficiais.
+            </p>
+          </div>
+
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t md:relative md:bg-transparent md:border-none md:p-0 z-50">
             <Button
               onClick={handleSave}
@@ -123,7 +141,6 @@ export function PayslipCalculator({ salarySettings, initialHistory }: PayslipCal
         </div>
       )}
 
-      {/* Secção de Histórico Inferior */}
       <div className="space-y-3 pt-4 border-t border-muted/40">
         <div className="flex items-center gap-2 text-muted-foreground px-1">
           <History className="w-4 h-4" />

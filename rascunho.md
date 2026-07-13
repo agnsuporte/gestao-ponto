@@ -122,3 +122,35 @@ scp -P 2222 root@1.2.3.4:/caminho/ficheiro .
 
 Por que é bom usar?
 Diferente do FTP tradicional, o SCP já vem instalado em quase todos os sistemas (Linux, Mac e Windows 10/11) e aproveita as mesmas chaves de acesso e segurança que já usas para o teu SSH normal.
+
+
+
+- payslips
+	|
+	+ — _actions
+	|	|
+	|	+ — generate-draft.ts
+	|	|
+	|	+ — get-payslips.ts
+	|	|
+	|	+ — save-payslip.ts
+	|	|
+	|	+ — save-settings.ts
+	|
+	+ — _components
+	|	|
+	|	+ — payslip-calculator.tsx
+	|	|
+	|	+ — payslip-header.tsx
+	|	|
+	|	+ —  payslip-history.tsx
+	|	|
+	|	+ — payslip-view.tsx
+	|	|
+	|	+ —salary-settings.tsx
+	|
+	+ — _schemas
+	|	|
+	|	+ — payslip-schema.ts
+	|
+	+ — page.tsx

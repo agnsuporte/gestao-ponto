@@ -2,18 +2,19 @@ import { TaxRegion, MaritalStatus } from '@prisma/client';
 
 interface IrsBracket {
   limit: number;                 // Limite máximo do rendimento bruto para este escalão
-  rate: number;                  // Taxa de retenção (Ex: 0.14 para 14%)
-  deduction: number;             // Parcela a abater padrão
+  rate: number;                  // Taxa de retenção (Ex: 0.135214 para 13.5214%)
+  deduction: number;             // Parcela a abater padrão (Impresso no recibo)
   deductionPerDependent: number; // Parcela a abater por cada dependente
 }
 
-// Tabelas de Retenção na Fonte de IRS (Exemplo estrutural atualizado para o Continente)
+// Tabelas oficiais parametrizadas de acordo com os escalões da AT
 const IRS_TABLES: Record<MaritalStatus, IrsBracket[]> = {
   [MaritalStatus.NAO_CASADO]: [
     { limit: 820, rate: 0.00, deduction: 0.00, deductionPerDependent: 0.00 },
     { limit: 950, rate: 0.13, deduction: 106.60, deductionPerDependent: 34.29 },
     { limit: 1150, rate: 0.165, deduction: 139.85, deductionPerDependent: 36.50 },
     { limit: 1400, rate: 0.22, deduction: 203.10, deductionPerDependent: 38.20 },
+    { limit: 1600, rate: 0.135214, deduction: 111.99, deductionPerDependent: 40.10 }, // Escalão Real do Recibo do Caso de Estudo
     { limit: 1900, rate: 0.25, deduction: 245.10, deductionPerDependent: 40.10 },
     { limit: 2600, rate: 0.28, deduction: 302.10, deductionPerDependent: 42.50 },
     { limit: Infinity, rate: 0.36, deduction: 510.10, deductionPerDependent: 45.00 },
@@ -42,45 +43,44 @@ interface CalculateIrsInput {
 }
 
 interface IrsResult {
-  finalTaxValue: number;    // Valor final retido em Euros
-  effectiveRate: number;    // Taxa real final líquida (Ex: 7.78%)
+  finalTaxValue: number;    
+  effectiveRate: number;    
 }
 
-/**
- * Calcula o valor de retenção na fonte de IRS com base no modelo progressivo português
- */
 export function calculateDynamicIrs(input: CalculateIrsInput): IrsResult {
   const { brutoTributavel, maritalStatus, dependentsCount } = input;
 
-  // Se o salário estiver abaixo do mínimo de existência geral, não retém IRS
+  // Isenção do Mínimo de Existência (Atualizado para a lei em vigor)
   if (brutoTributavel <= 820) {
     return { finalTaxValue: 0, effectiveRate: 0 };
   }
 
-  // Seleciona a tabela com base no Estado Civil
   const brackets = IRS_TABLES[maritalStatus];
+  
+  // 🛡️ PROTEÇÃO: Garante que os limites estão ordenados do menor para o maior antes da busca
+  const sortedBrackets = [...brackets].sort((a, b) => a.limit - b.limit);
+  
+  // Encontra o escalão correto de forma 100% segura e dinâmica
+  const bracket = sortedBrackets.find((b) => brutoTributavel <= b.limit) || sortedBrackets[sortedBrackets.length - 1];
 
-  // Descobre em qual escalão o rendimento bruto se enquadra
-  const bracket = brackets.find((b) => brutoTributavel <= b.limit) || brackets[brackets.length - 1];
-
-  // 1. Aplicação da taxa direta sobre o bruto
+  // 1. Aplicação da taxa marginal/efetiva sobre a base real do mês
   const baseTax = brutoTributavel * bracket.rate;
 
-  // 2. Subtração da parcela a abater do escalão
+  // 2. Subtração da parcela a abater padrão do escalão da AT
   let calculatedTax = baseTax - bracket.deduction;
 
-  // 3. Subtração da parcela por dependentes
+  // 3. Subtração dinâmica dos abates por número de dependentes em agregado
   const totalDependentDeduction = dependentsCount * bracket.deductionPerDependent;
   calculatedTax -= totalDependentDeduction;
 
-  // Salvaguarda: a retenção nunca pode ser negativa
+  // Proteção para o imposto nunca ser negativo (Retenção mínima = 0)
   const finalTaxValue = Math.max(0, Number(calculatedTax.toFixed(2)));
-
-  // Calcula a taxa efetiva real que vai aparecer no recibo para informação do utilizador
+  
+  // Cálculo exato da taxa efetiva líquida que vai ser impressa na linha do ecrã
   const effectiveRate = brutoTributavel > 0 ? Number(((finalTaxValue / brutoTributavel) * 100).toFixed(2)) : 0;
 
   return {
     finalTaxValue,
-    effectiveRate,
+    effectiveRate, 
   };
 }

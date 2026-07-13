@@ -2,9 +2,30 @@
 
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import  prisma  from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { savePayslipSchema } from "../_schemas/payslip-schema";
 import { revalidatePath } from "next/cache";
+
+// Função auxiliar para converter os Decimais do Prisma em Numbers primitivos do JS
+function serializePayslip(payslip: any) {
+  if (!payslip) return null;
+
+  return {
+    ...payslip,
+    baseSalary: Number(payslip.baseSalary),
+    totalGross: Number(payslip.totalGross),
+    totalDeductions: Number(payslip.totalDeductions),
+    netSalary: Number(payslip.netSalary),
+    lines: payslip.lines?.map((line: any) => ({
+      ...line,
+      quantity: line.quantity ? Number(line.quantity) : undefined,
+      unitValue: line.unitValue ? Number(line.unitValue) : undefined,
+      rate: line.rate ? Number(line.rate) : undefined,
+      baseValue: line.baseValue ? Number(line.baseValue) : undefined,
+      totalValue: Number(line.totalValue),
+    })) || [],
+  };
+}
 
 export async function savePayslip(rawData: unknown) {
   // 1. Validar autenticação do utilizador com NextAuth
@@ -76,7 +97,8 @@ export async function savePayslip(rawData: unknown) {
     // 6. Atualizar a cache do Next.js para refletir o novo recibo no histórico
     revalidatePath("/payslips");
 
-    return { success: true, data: savedPayslip };
+    // 7. Devolver os dados limpos e serializados (Plain Objects livres de Decimal)
+    return { success: true, data: serializePayslip(savedPayslip) };
   } catch (error: any) {
     return { 
       success: false, 

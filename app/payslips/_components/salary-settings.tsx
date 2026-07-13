@@ -46,6 +46,7 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
   // Estados do Subsídio de Alimentação
   const [mealAllowanceValue, setMealAllowanceValue] = React.useState(initialData ? String(initialData.mealAllowanceValue) : "0.00");
   const [mealAllowanceType, setMealAllowanceType] = React.useState<MealAllowanceType>(initialData ? initialData.mealAllowanceType : MealAllowanceType.CARTAO);
+  const [mealAllowanceDays, setMealAllowanceDays] = React.useState(initialData ? String(initialData.mealAllowanceDays) : "22");
 
   // Atualiza os estados quando os dados assíncronos da BD chegam
   React.useEffect(() => {
@@ -59,6 +60,7 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
       setDependentsCount(String(initialData.dependentsCount));
       setMealAllowanceValue(String(initialData.mealAllowanceValue));
       setMealAllowanceType(initialData.mealAllowanceType);
+      setMealAllowanceDays(String(initialData.mealAllowanceDays ?? 22));
     }
   }, [initialData]);
 
@@ -77,6 +79,7 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
         dependentsCount: Number(dependentsCount),
         mealAllowanceValue: Number(mealAllowanceValue),
         mealAllowanceType,
+        mealAllowanceDays: Number(mealAllowanceDays),
       });
 
       if (res.success) {
@@ -206,12 +209,13 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
           <hr className="border-muted/60" />
 
           {/* Seção 3: Subsídio de Alimentação */}
+          {/* Seção 3: Subsídio de Alimentação Expandido */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold flex items-center gap-1.5 text-muted-foreground">
               <Wallet className="h-4 w-4 text-blue-500" /> SUBSÍDIO DE ALIMENTAÇÃO
             </h3>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2"> {/* Mudado para 3 colunas */}
               <div className="space-y-2">
                 <Label htmlFor="mealValue" className="text-xs font-semibold">Valor Diário (€)</Label>
                 <Input
@@ -226,18 +230,34 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs font-semibold">Modo de Pagamento</Label>
+                <Label htmlFor="mealDays" className="text-xs font-semibold">Dias a Pagar</Label>
+                <Input
+                  id="mealDays"
+                  type="number"
+                  min="0"
+                  max="31"
+                  value={mealAllowanceDays}
+                  onChange={(e) => setMealAllowanceDays(e.target.value)}
+                  className="h-11 text-sm"
+                  placeholder="Ex: 22"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Modo Pagamento</Label>
                 <select
                   value={mealAllowanceType}
                   onChange={(e) => setMealAllowanceType(e.target.value as MealAllowanceType)}
-                  className="w-full h-11 px-3 rounded-xl border border-input bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full h-11 px-2 rounded-xl border border-input bg-background text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                  <option value={MealAllowanceType.CARTAO}>Cartão Refeição (Isento até 9.60€)</option>
-                  <option value={MealAllowanceType.DINHEIRO}>Dinheiro / Conta (Isento até 6.00€)</option>
+                  <option value={MealAllowanceType.CARTAO}>Cartão (9.60€)</option>
+                  <option value={MealAllowanceType.DINHEIRO}>Dinheiro (6.00€)</option>
                 </select>
               </div>
             </div>
           </div>
+
 
           <Button
             type="submit"

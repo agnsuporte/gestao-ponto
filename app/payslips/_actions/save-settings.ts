@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { TaxRegion, MaritalStatus, MealAllowanceType } from "@prisma/client";
 
-// Esquema de validação Zod expandido com os novos tipos do Prisma
+// Esquema de validação Zod expandido com o novo campo de dias fixos
 const settingsSchema = z.object({
   baseSalary: z.number().positive("O salário base deve ser maior que zero"),
   hasHolidayBonus: z.boolean(),
@@ -18,6 +18,7 @@ const settingsSchema = z.object({
   dependentsCount: z.number().int().nonnegative(),
   mealAllowanceValue: z.number().nonnegative(),
   mealAllowanceType: z.nativeEnum(MealAllowanceType),
+  mealAllowanceDays: z.number().int().min(0).max(31), // 👈 NOVO: Validação do número de dias úteis
 });
 
 export async function saveSalarySettings(rawData: unknown) {
@@ -25,7 +26,7 @@ export async function saveSalarySettings(rawData: unknown) {
   if (!session || !session.user) {
     throw new Error("Não autorizado.");
   }
-  console.log("Dados recebidos para salvar:", session.user.id); // Log para depuração
+  
   const userId = session.user.id;
   const result = settingsSchema.safeParse(rawData);
 
@@ -33,7 +34,7 @@ export async function saveSalarySettings(rawData: unknown) {
     throw new Error("Dados de configuração inválidos.");
   }
 
-  // Desestruturação de todos os novos campos validados
+  // Desestruturação incluindo o novo campo mapeado do formulário
   const { 
     baseSalary, 
     hasHolidayBonus, 
@@ -43,7 +44,8 @@ export async function saveSalarySettings(rawData: unknown) {
     maritalStatus,
     dependentsCount,
     mealAllowanceValue,
-    mealAllowanceType
+    mealAllowanceType,
+    mealAllowanceDays // 👈 NOVO
   } = result.data;
 
   // Cria ou atualiza as configurações completas do utilizador (Upsert)
@@ -58,7 +60,8 @@ export async function saveSalarySettings(rawData: unknown) {
       maritalStatus,
       dependentsCount,
       mealAllowanceValue,
-      mealAllowanceType
+      mealAllowanceType,
+      mealAllowanceDays // 👈 NOVO
     },
     create: { 
       userId, 
@@ -70,7 +73,8 @@ export async function saveSalarySettings(rawData: unknown) {
       maritalStatus,
       dependentsCount,
       mealAllowanceValue,
-      mealAllowanceType
+      mealAllowanceType,
+      mealAllowanceDays // 👈 NOVO
     },
   });
 
