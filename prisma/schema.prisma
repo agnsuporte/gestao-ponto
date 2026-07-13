@@ -140,6 +140,8 @@ model UserSalarySettings {
   mealAllowanceDays    Int               @default(22) // 👈 ADICIONAR ESTA LINHA (Valor padrão de dias úteis)
 
   updatedAt          DateTime          @updatedAt
+
+  @@map("UserSalarySettings")
 }
 
 model Payslip {
@@ -157,6 +159,7 @@ model Payslip {
 
   @@unique([userId, month, year]) // Impede recibos duplicados para o mesmo mês
   @@index([userId])
+  @@map("Payslip")
 }
 
 model PayslipLine {
