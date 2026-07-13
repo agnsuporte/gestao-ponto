@@ -174,4 +174,5 @@ model PayslipLine {
   rate        Decimal? @db.Decimal(5, 2)  // Percentagem / Taxa (Ex: 11.00 ou 7.78)
   baseValue   Decimal? @db.Decimal(10, 2) // Base de incidência (Ex: 1302.92)
   totalValue  Decimal  @db.Decimal(10, 2) // Valor Final (Ex: 955.00, 143.32)
+   @@map("PayslipLine")
 }
