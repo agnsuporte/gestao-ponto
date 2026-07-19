@@ -5,7 +5,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { PayslipCalculator } from "./_components/payslip-calculator";
 import { SalarySettingsForm } from "./_components/salary-settings";
-import { getPayslipsHistory } from "./_actions/get-payslips"
+import { getPayslipsHistory } from "./_actions/get-payslips";
 
 export default async function PayslipsPage() {
   const session = await getServerSession(authOptions);
@@ -14,22 +14,12 @@ export default async function PayslipsPage() {
     redirect("/login");
   }
 
+  // 1. Procura as definições salariais do utilizador
   const salarySettings = await prisma.userSalarySettings.findUnique({
     where: { userId: session.user.id },
   });
 
-  if (!salarySettings) {
-    return null; // Ou lida com o ecrã de bloqueio inicial
-  }
-
-  // ✨ Sanitização: transforma objetos Decimal em Numbers puros do JavaScript
-  const settings = {
-    ...salarySettings,
-    baseSalary: Number(salarySettings.baseSalary),
-    gratification: Number(salarySettings.gratification),
-    mealAllowanceValue: Number(salarySettings.mealAllowanceValue), // <-- Resolve o erro do log!
-  };
-
+  // 2. CORREÇÃO: Se NÃO existirem dados, renderiza IMEDIATAMENTE o formulário inicial
   if (!salarySettings) {
     return (
       <div className="container max-w-md mx-auto p-4 pt-8 space-y-4">
@@ -44,25 +34,19 @@ export default async function PayslipsPage() {
     );
   }
 
+  // 3. Se chegou aqui, os dados existem. Executa a higienização dos dados do perfil
+  const sanitizedSettings = {
+    ...salarySettings,
+    baseSalary: Number(salarySettings.baseSalary),
+    gratification: Number(salarySettings.gratification),
+    mealAllowanceValue: Number(salarySettings.mealAllowanceValue),
+  };
+
+  // 4. Procura o histórico de recibos
   const historyResponse = await getPayslipsHistory();
   const rawHistory = historyResponse.success ? historyResponse.data : [];
 
-  // =========================================================================
-  // HIGIENIZAÇÃO: Converter objetos Decimal do Prisma em Plain Numbers/Objects
-  // =========================================================================
-  
-
-// Localiza a tua sanitização antes da linha 80:
-const sanitizedSettings = {
-  ...salarySettings, // O objeto vindo do prisma.userSalarySettings.findUnique
-  baseSalary: Number(salarySettings.baseSalary),
-  gratification: Number(salarySettings.gratification),
-  // ✨ ADICIONAR ESTA LINHA ABAIXO PARA CORRIGIR O ERRO:
-  mealAllowanceValue: Number(salarySettings.mealAllowanceValue),
-};
-
-
-  // 2. Sanitizar a lista do histórico (caso use Decimais nas colunas da tabela Payslip)
+  // 5. Higienização da lista do histórico (Decimais para Numbers)
   const sanitizedHistory = rawHistory.map((item: any) => ({
     ...item,
     baseSalary: Number(item.baseSalary),
@@ -73,7 +57,7 @@ const sanitizedSettings = {
     updatedAt: item.updatedAt?.toISOString() || null,
   }));
 
-  // Enviamos os dados limpos e puros para o cliente
+  // 6. Envia os dados limpos para o componente cliente
   return (
     <PayslipCalculator 
       salarySettings={sanitizedSettings} 
