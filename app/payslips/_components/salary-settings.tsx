@@ -24,6 +24,7 @@ interface SalarySettingsFormProps {
     dependentsCount: number;
     mealAllowanceValue: number;
     mealAllowanceType: MealAllowanceType;
+    mealAllowanceDays: number; // ✨ CORRIGIDO: Adicionado à interface
   } | null;
   onSaveSuccess?: () => void;
 }
@@ -32,21 +33,21 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
   const router = useRouter();
   const [saving, setSaving] = React.useState(false);
 
-  // Estados base salariais
-  const [baseSalary, setBaseSalary] = React.useState(initialData ? String(initialData.baseSalary) : "955.00");
-  const [hasHoliday, setHasHoliday] = React.useState(initialData ? initialData.hasHolidayBonus : true);
-  const [hasChristmas, setHasChristmas] = React.useState(initialData ? initialData.hasChristmasBonus : true);
-  const [gratification, setGratification] = React.useState(initialData ? String(initialData.gratification) : "0.00");
+  // Estados base salariais com fallback seguro para strings
+  const [baseSalary, setBaseSalary] = React.useState(() => initialData ? String(initialData.baseSalary) : "955.00");
+  const [hasHoliday, setHasHoliday] = React.useState(() => initialData ? initialData.hasHolidayBonus : true);
+  const [hasChristmas, setHasChristmas] = React.useState(() => initialData ? initialData.hasChristmasBonus : true);
+  const [gratification, setGratification] = React.useState(() => initialData ? String(initialData.gratification) : "0.00");
 
   // Estados do perfil fiscal de IRS
-  const [taxRegion, setTaxRegion] = React.useState<TaxRegion>(initialData ? initialData.taxRegion : TaxRegion.CONTINENTE);
-  const [maritalStatus, setMaritalStatus] = React.useState<MaritalStatus>(initialData ? initialData.maritalStatus : MaritalStatus.NAO_CASADO);
-  const [dependentsCount, setDependentsCount] = React.useState(initialData ? String(initialData.dependentsCount) : "0");
+  const [taxRegion, setTaxRegion] = React.useState<TaxRegion>(() => initialData ? initialData.taxRegion : TaxRegion.CONTINENTE);
+  const [maritalStatus, setMaritalStatus] = React.useState<MaritalStatus>(() => initialData ? initialData.maritalStatus : MaritalStatus.NAO_CASADO);
+  const [dependentsCount, setDependentsCount] = React.useState(() => initialData ? String(initialData.dependentsCount) : "0");
 
   // Estados do Subsídio de Alimentação
-  const [mealAllowanceValue, setMealAllowanceValue] = React.useState(initialData ? String(initialData.mealAllowanceValue) : "0.00");
-  const [mealAllowanceType, setMealAllowanceType] = React.useState<MealAllowanceType>(initialData ? initialData.mealAllowanceType : MealAllowanceType.CARTAO);
-  const [mealAllowanceDays, setMealAllowanceDays] = React.useState(initialData ? String(initialData.mealAllowanceDays) : "22");
+  const [mealAllowanceValue, setMealAllowanceValue] = React.useState(() => initialData ? String(initialData.mealAllowanceValue) : "0.00");
+  const [mealAllowanceType, setMealAllowanceType] = React.useState<MealAllowanceType>(() => initialData ? initialData.mealAllowanceType : MealAllowanceType.CARTAO);
+  const [mealAllowanceDays, setMealAllowanceDays] = React.useState(() => initialData ? String(initialData.mealAllowanceDays) : "22");
 
   // Atualiza os estados quando os dados assíncronos da BD chegam
   React.useEffect(() => {
@@ -64,7 +65,6 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
     }
   }, [initialData]);
 
-  // Submissão unificada dos dados para a Server Action
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);

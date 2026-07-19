@@ -7,7 +7,7 @@ import { generatePayslipDraft, PayslipDraftResponse } from "../_actions/generate
 import { savePayslip } from "../_actions/save-payslip"; 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, History, SlidersHorizontal } from "lucide-react";
+import { Loader2, CheckCircle2, History } from "lucide-react";
 
 import { PayslipHeader } from "./payslip-header";
 import { PayslipView } from "./payslip-view";
@@ -29,29 +29,23 @@ export function PayslipCalculator({ salarySettings, initialHistory }: PayslipCal
   const [month, setMonth] = React.useState<string>(String(now.getMonth() + 1));
   const [year, setYear] = React.useState<string>(String(now.getFullYear()));
 
-  // Altere o estado inicial para '6' para abrir diretamente no mês do recibo de teste
-// const [month, setMonth] = React.useState<string>("6");
-// const [year, setYear] = React.useState<string>("2026");
+  // Bloqueio preventivo se não existirem definições
+  const hasSettings = !!salarySettings;
 
-
-
-const loadDraft = React.useCallback(() => {
-  startTransition(async () => {
-    try {
-      // Deixe APENAS o mês e o ano. Remova o número 6!
-      const data = await generatePayslipDraft(
-        Number(month), 
-        Number(year)
-      );
-      setDraft(data);
-    } catch (error) {
-      console.log("Erro ao gerar a previsão do recibo:", error);
-      toast.error("Erro ao gerar a previsão do recibo.");
-      setDraft(null);
-    }
-  });
-}, [month, year]); // O array de dependências fica limpo e correto
-
+  const loadDraft = React.useCallback(() => {
+    if (!hasSettings) return; // 🛑 Impede chamadas absurdas sem definições salariais configuradas
+    
+    startTransition(async () => {
+      try {
+        const data = await generatePayslipDraft(Number(month), Number(year));
+        setDraft(data);
+      } catch (error) {
+        console.log("Erro ao gerar a previsão do recibo:", error);
+        toast.error("Erro ao gerar a previsão do recibo.");
+        setDraft(null);
+      }
+    });
+  }, [month, year, hasSettings]);
 
   React.useEffect(() => {
     loadDraft();
@@ -86,9 +80,23 @@ const loadDraft = React.useCallback(() => {
     }
   }
 
+  // 🛡️ SE NÃO HOUVER CONFIGURAÇÕES, EXIBE APENAS O FORMULÁRIO DE ENTRADA IMEDIATAMENTE
+  if (!hasSettings) {
+    return (
+      <div className="container max-w-md mx-auto p-4 pt-8 space-y-4 animate-in fade-in duration-300">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Configuração Inicial</h1>
+          <p className="text-sm text-muted-foreground">
+            Insira os seus dados salariais base para ativar o motor de rascunhos automáticos.
+          </p>
+        </div>
+        <SalarySettingsForm initialData={null} onSaveSuccess={() => router.refresh()} />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-md p-4 pb-32 space-y-6 animate-in fade-in duration-300">
-      
       <PayslipHeader 
         salarySettings={salarySettings}
         month={month}
@@ -98,23 +106,18 @@ const loadDraft = React.useCallback(() => {
         onSettingsSaved={loadDraft}
       />
 
-
       {isPending ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-2 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm">A processar turnos reais ao cêntimo...</p>
+          <p className="text-sm">A processar...</p>
         </div>
       ) : draft ? (
         <>
           <PayslipView draft={draft} />
 
-          {/* TEXTO DE AVISO DE SIMULAÇÃO (DISCLAIMER LEGAL) */}
           <div className="rounded-xl p-3 bg-muted/40 border border-muted text-muted-foreground text-[11px] leading-relaxed text-center space-y-1">
             <p>
               ⚠️ <strong>Aviso de Simulação:</strong> Os valores apresentados são aproximados e servem exclusivamente como uma perspetiva indicativa do vencimento prático.
-            </p>
-            <p>
-              O cálculo final pode variar dependendo de retroativos, parametrizações específicas de RH ou alterações das tabelas de retenção na fonte oficiais.
             </p>
           </div>
 
@@ -125,7 +128,7 @@ const loadDraft = React.useCallback(() => {
               className="w-full h-12 text-base font-medium rounded-xl shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
               {saving ? (
-                <><Loader2 className="h-5 w-5 animate-spin" /> A guardar recibo...</>
+                <><Loader2 className="h-5 w-5 animate-spin" /> A guardar...</>
               ) : (
                 <><CheckCircle2 className="h-5 w-5" /> Confirmar e Fechar Mês</>
               )}
@@ -135,9 +138,8 @@ const loadDraft = React.useCallback(() => {
       ) : (
         <div className="space-y-4">
           <div className="text-center py-4 px-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-medium">
-            ⚠️ Precisa de definir o seu salário base para calcular as horas extras e duodécimos.
+            ⚠️ Erro ao processar rascunho de simulação.
           </div>
-          <SalarySettingsForm onSaveSuccess={loadDraft} />
         </div>
       )}
 
@@ -148,7 +150,6 @@ const loadDraft = React.useCallback(() => {
         </div>
         <PayslipHistoryList payslips={initialHistory} />
       </div>
-
     </div>
   );
 }
