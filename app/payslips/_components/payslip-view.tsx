@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Wallet, ArrowUpRight, ArrowDownRight, Coins } from "lucide-react";
 import { PayslipDraftResponse } from "../_actions/generate-draft";
 
 interface PayslipViewProps {
@@ -11,85 +11,117 @@ interface PayslipViewProps {
 }
 
 export function PayslipView({ draft }: PayslipViewProps) {
+  // Formatador oficial de moeda para o padrão português
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-PT", {
+      style: "currency",
+      currency: "EUR",
+    }).format(value);
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Cartão de Destaque Líquido em Degradê */}
-      <Card className="border-none bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-md">
-        <CardHeader className="p-5 pb-2">
-          <CardDescription className="text-primary-foreground/70 text-xs font-medium uppercase tracking-wider">
-            Vencimento Líquido Estimado
+    <div className="space-y-4 animate-in fade-in duration-300">
+      
+      {/* 1. CARTÃO DE DESTAQUE: Glassmorphism Líquido com Gradiente Translúcido de Fundo */}
+      <Card className="relative overflow-hidden border border-indigo-500/10 bg-background/40 backdrop-blur-md shadow-lg rounded-2xl">
+        {/* Detalhe estético em degradê suave no fundo para quebrar o preto no branco */}
+        <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none" />
+        
+        <CardHeader className="p-5 pb-3">
+          <CardDescription className="text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
+            <Coins className="h-3.5 w-3.5" /> Vencimento Líquido Estimado
           </CardDescription>
-          <CardTitle className="text-3xl font-bold tracking-tight">
-            {draft.netSalary.toLocaleString("pt-PT", { style: "currency", currency: "EUR" })}
+          <CardTitle className="text-3xl font-extrabold tracking-tight text-foreground pt-1">
+            {formatCurrency(draft.netSalary)}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-5 pt-0 flex justify-between items-center text-xs text-primary-foreground/90">
-          <span className="flex items-center gap-1">
-            <ArrowUpRight className="h-4 w-4 text-emerald-300" /> Bruto: {draft.totalGross.toFixed(2)}€
-          </span>
-          <span className="flex items-center gap-1">
-            <ArrowDownRight className="h-4 w-4 text-rose-300" /> Descontos: {draft.totalDeductions.toFixed(2)}€
-          </span>
+        
+        <CardContent className="p-5 pt-0 grid grid-cols-2 gap-3 border-t border-indigo-500/5 bg-indigo-500/[0.01]">
+          {/* Métricas compactas com micro-cores dedicadas */}
+          <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-500/[0.04] border border-emerald-500/10">
+            <div className="p-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <ArrowUpRight className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Bruto</p>
+              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{formatCurrency(draft.totalGross)}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 p-2 rounded-xl bg-rose-500/[0.04] border border-rose-500/10">
+            <div className="p-1 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+              <ArrowDownRight className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Descontos</p>
+              <p className="text-xs font-bold text-rose-600 dark:text-rose-400 mt-0.5">{formatCurrency(draft.totalDeductions)}</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Detalhes Técnicos e Discriminação */}
-      <Card className="border border-muted/60 shadow-sm bg-background">
-        <CardHeader className="p-4 pb-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Wallet className="h-4 w-4 text-muted-foreground" /> Discriminação do Recibo
+      {/* 2. DISCRIMINAÇÃO TÉCNICA: Painel Estruturado de Transparência de Vidro */}
+      <Card className="border border-indigo-500/5 shadow-md bg-background/50 backdrop-blur-md rounded-2xl overflow-hidden">
+        <CardHeader className="p-4 pb-2 border-b border-muted/30 bg-muted/10">
+          <CardTitle className="text-xs font-bold flex items-center gap-2 text-muted-foreground/90 uppercase tracking-wider">
+            <Wallet className="h-4 w-4 text-indigo-500" /> Discriminação do Recibo
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 pt-0 space-y-4">
+        
+        <CardContent className="p-4 space-y-4">
           
-          {/* Secção de Abonos */}
-          <div className="space-y-2.5">
-            <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+          {/* SECÇÃO A: Abonos e Rendimentos Reais */}
+          <div className="space-y-3">
+            <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">
               Abonos e Suplementos
             </span>
-            {draft.lines
-              .filter((l) => l.type === "ABONO")
-              .map((line, idx) => (
-                <div key={idx} className="flex justify-between items-start py-0.5">
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-medium leading-none">{line.description}</p>
-                    {line.quantity && line.unitValue && (
-                      <p className="text-xs text-muted-foreground">
-                        {line.quantity} {line.code === "201" ? "horas" : "dias"} x {line.unitValue.toFixed(2)}€
-                      </p>
-                    )}
+            <div className="divide-y divide-muted/30 space-y-2">
+              {draft.lines
+                .filter((l) => l.type === "ABONO")
+                .map((line, idx) => (
+                  <div key={idx} className="flex justify-between items-start pt-2 first:pt-0">
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-semibold text-foreground tracking-tight">{line.description}</p>
+                      {line.quantity && line.unitValue && (
+                        <p className="text-[11px] font-medium text-muted-foreground/80">
+                          {line.quantity} {line.code === "201" ? "horas" : "dias"} × {formatCurrency(line.unitValue)}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/[0.06] px-2 py-0.5 rounded-lg border border-emerald-500/10">
+                      +{formatCurrency(line.totalValue)}
+                    </span>
                   </div>
-                  <span className="text-sm font-semibold text-foreground">
-                    +{line.totalValue.toFixed(2)}€
-                  </span>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
 
-          <Separator className="bg-muted/60" />
+          <Separator className="bg-muted/40" />
 
-          {/* Secção de Descontos Completa */}
-          <div className="space-y-2.5">
-            <span className="text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider block">
+          {/* SECÇÃO B: Deduções e Retenções Fiscais */}
+          <div className="space-y-3">
+            <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 uppercase tracking-widest block">
               Retenções e Descontos
             </span>
-            {draft.lines
-              .filter((l) => l.type === "DESCONTO")
-              .map((line, idx) => (
-                <div key={idx} className="flex justify-between items-start py-0.5">
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-medium leading-none">{line.description}</p>
-                    {line.rate && (
-                      <p className="text-xs text-muted-foreground">
-                        Taxa de {line.rate}% sobre {line.baseValue?.toFixed(2)}€
-                      </p>
-                    )}
+            <div className="divide-y divide-muted/30 space-y-2">
+              {draft.lines
+                .filter((l) => l.type === "DESCONTO")
+                .map((line, idx) => (
+                  <div key={idx} className="flex justify-between items-start pt-2 first:pt-0">
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-semibold text-foreground tracking-tight">{line.description}</p>
+                      {line.rate && (
+                        <p className="text-[11px] font-medium text-muted-foreground/80">
+                          Taxa de {line.rate}% sobre {formatCurrency(line.baseValue ?? 0)}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/[0.06] px-2 py-0.5 rounded-lg border border-rose-500/10">
+                      -{formatCurrency(line.totalValue)}
+                    </span>
                   </div>
-                  <span className="text-sm font-semibold text-rose-600 dark:text-rose-400">
-                    -{line.totalValue.toFixed(2)}€
-                  </span>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
 
         </CardContent>

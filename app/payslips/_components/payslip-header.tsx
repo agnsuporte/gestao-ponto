@@ -1,11 +1,10 @@
 // app/payslips/_components/payslip-header.tsx
 "use client";
 
-import * as React from "react";
-import { Wallet, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Settings2, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { SalarySettingsForm } from "./salary-settings";
 
 interface PayslipHeaderProps {
@@ -17,79 +16,77 @@ interface PayslipHeaderProps {
   onSettingsSaved: () => void;
 }
 
-export function PayslipHeader({
-  salarySettings,
-  month,
-  setMonth,
-  year,
-  setYear,
-  onSettingsSaved
-}: PayslipHeaderProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+export function PayslipHeader({ salarySettings, month, setMonth, year, setYear, onSettingsSaved }: PayslipHeaderProps) {
+  const router = useRouter();
 
   return (
-    <div className="space-y-4">
-      {/* Topo com Botão de Configuração */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Wallet className="w-5 h-5 text-primary" />
-          <h1 className="text-xl font-bold tracking-tight">Recibos</h1>
+    <div className="flex flex-col gap-4">
+      {/* Barra de Escape superior com Voltar e Fechar para /time-record */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          {/* Botão Clássico de Voltar */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => router.back()} 
+            className="text-muted-foreground hover:text-foreground text-xs gap-1.5 pl-1 rounded-xl h-8"
+          >
+            <ArrowLeft className="h-4 w-4" /> Voltar
+          </Button>
+
+          <div className="h-4 w-[1px] bg-muted/60 mx-1" />
+
+          {/* ✨ NOVO BOTÃO: Fechar e saltar para o Registo de Horas
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => router.push("/time-record")} 
+            className="text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 text-xs gap-1 rounded-xl h-8"
+          >
+            <X className="h-4 w-4" /> Fechar
+          </Button> */}
         </div>
-        
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+
+        {/* Modal de Preferências Salariais */}
+        <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 px-3 active:scale-95 transition-transform">
-              <Settings className="w-4 h-4 mr-1.5 text-muted-foreground" />
-              Configurar
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 rounded-xl border-indigo-500/10 bg-background/50 hover:bg-indigo-500/10">
+              <Settings2 className="h-3.5 w-3.5 text-indigo-500" /> Preferências
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[92vw] max-w-md rounded-2xl p-6">
-            <DialogHeader className="text-left">
-              <DialogTitle>Configurações Salariais</DialogTitle>
-              <DialogDescription>
-                Atualize o seu ordenado base, subsídios ou retenções para os próximos rascunhos.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-4">
-              <SalarySettingsForm 
-                initialData={salarySettings} 
-                onSaveSuccess={() => {
-                  setIsOpen(false);
-                  onSettingsSaved();
-                }} 
-              />
-            </div>
+          <DialogContent className="max-w-md p-0 overflow-hidden border-none bg-transparent shadow-none sm:rounded-2xl">
+            <DialogTitle className="sr-only">Configurações do Ordenado</DialogTitle>
+            <SalarySettingsForm initialData={salarySettings} onSaveSuccess={onSettingsSaved} />
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Seletores Mobile-First */}
-      <div className="grid grid-cols-2 gap-2">
-        <Select value={month} onValueChange={setMonth}>
-          <SelectTrigger className="h-12 bg-background border-muted text-base">
-            <SelectValue placeholder="Mês" />
-          </SelectTrigger>
-          <SelectContent>
-            {Array.from({ length: 12 }, (_, i) => (
-              <SelectItem key={i + 1} value={String(i + 1)}>
-                {new Date(2000, i).toLocaleString("pt-PT", { month: "long" })}
-              </SelectItem>
+      {/* Título e Seletores de Data */}
+      <div className="flex items-center justify-between bg-background/40 backdrop-blur-md p-3.5 rounded-2xl border border-indigo-500/5 shadow-sm">
+        <div>
+          <h1 className="text-sm font-bold tracking-tight text-foreground">Recibo Prático</h1>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mt-0.5">Previsão Mensal</p>
+        </div>
+        
+        <div className="flex items-center gap-1.5">
+          <select 
+            value={month} 
+            onChange={(e) => setMonth(e.target.value)}
+            className="h-9 px-2.5 rounded-xl border border-input bg-background/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+          >
+            {Array.from({ length: 12 }, (_, i) => String(i + 1)).map((m) => (
+              <option key={m} value={m}>{m.padStart(2, '0')}</option>
             ))}
-          </SelectContent>
-        </Select>
-
-        <Select value={year} onValueChange={setYear}>
-          <SelectTrigger className="h-12 bg-background border-muted text-base">
-            <SelectValue placeholder="Ano" />
-          </SelectTrigger>
-          <SelectContent>
-            {["2025", "2026", "2027"].map((y) => (
-              <SelectItem key={y} value={y}>
-                {y}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          </select>
+          <select 
+            value={year} 
+            onChange={(e) => setYear(e.target.value)}
+            className="h-9 px-2.5 rounded-xl border border-input bg-background/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+          >
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+          </select>
+        </div>
       </div>
     </div>
   );

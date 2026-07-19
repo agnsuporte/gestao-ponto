@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, Settings2, ShieldCheck, Wallet } from "lucide-react";
+import { Banknote, Loader2, Settings2, ShieldCheck, Wallet } from "lucide-react";
 import { TaxRegion, MaritalStatus, MealAllowanceType } from "@prisma/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SalarySettingsFormProps {
   initialData?: {
@@ -98,183 +99,198 @@ export function SalarySettingsForm({ initialData, onSaveSuccess }: SalarySetting
   }
 
   return (
-    <Card className="w-full border border-muted/60 shadow-sm max-h-[85vh] overflow-y-auto">
-      <CardHeader className="p-5 pb-3">
-        <CardTitle className="text-lg font-bold flex items-center gap-2">
-          <Settings2 className="h-5 w-5 text-primary" /> Configuração do Ordenado
+    <Card className="w-full max-w-md border border-indigo-500/10 shadow-xl bg-background/80 backdrop-blur-md max-h-[85vh] flex flex-col rounded-2xl overflow-hidden transition-all">
+      <CardHeader className="p-4 pb-2 border-b border-muted/30 bg-indigo-500/[0.02]">
+        <CardTitle className="text-base font-bold flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+          <Settings2 className="h-4 w-4" /> Configuração do Ordenado
         </CardTitle>
-        <CardDescription>
-          Insira os seus dados base e perfil fiscal para podermos estimar o seu IRS dinâmico e o seu recibo real de forma precisa.
+        <CardDescription className="text-xs">
+          Insira os seus dados base e perfil fiscal organizados por secções.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="p-5 pt-0 space-y-5">
-          {/* Seção 1: Configuração Base */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="baseSalary" className="text-sm font-semibold">Vencimento Base (€)</Label>
-              <Input
-                id="baseSalary"
-                type="number"
-                step="0.01"
-                value={baseSalary}
-                onChange={(e) => setBaseSalary(e.target.value)}
-                className="h-12 text-base"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center justify-between rounded-xl border p-3 bg-muted/10">
-                <div className="space-y-0.5">
-                  <Label className="text-xs font-semibold">Sub. Férias</Label>
-                  <p className="text-[10px] text-muted-foreground">Duodécimos</p>
-                </div>
-                <Switch checked={hasHoliday} onCheckedChange={setHasHoliday} />
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl border p-3 bg-muted/10">
-                <div className="space-y-0.5">
-                  <Label className="text-xs font-semibold">Sub. Natal</Label>
-                  <p className="text-[10px] text-muted-foreground">Duodécimos</p>
-                </div>
-                <Switch checked={hasChristmas} onCheckedChange={setHasChristmas} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="gratification" className="text-sm font-semibold">Gratificação de Resultados (€)</Label>
-              <Input
-                id="gratification"
-                type="number"
-                step="0.01"
-                value={gratification}
-                onChange={(e) => setGratification(e.target.value)}
-                className="h-12 text-base"
-                placeholder="0.00"
-              />
-            </div>
-          </div>
-
-          <hr className="border-muted/60" />
-
-          {/* Seção 2: Perfil Fiscal (IRS) */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold flex items-center gap-1.5 text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-emerald-500" /> RETENÇÃO NA FONTE (IRS)
-            </h3>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold">Região Fiscal</Label>
-                <select
-                  value={taxRegion}
-                  onChange={(e) => setTaxRegion(e.target.value as TaxRegion)}
-                  className="w-full h-11 px-3 rounded-xl border border-input bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value={TaxRegion.CONTINENTE}>Continente</option>
-                  <option value={TaxRegion.MADEIRA}>Madeira</option>
-                  <option value={TaxRegion.ACORES}>Açores</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="dependentsCount" className="text-xs font-semibold">Dependentes (Filhos)</Label>
-                <Input
-                  id="dependentsCount"
-                  type="number"
-                  min="0"
-                  value={dependentsCount}
-                  onChange={(e) => setDependentsCount(e.target.value)}
-                  className="h-11 text-sm"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold">Estado Civil e Titularidade</Label>
-              <select
-                value={maritalStatus}
-                onChange={(e) => setMaritalStatus(e.target.value as MaritalStatus)}
-                className="w-full h-11 px-3 rounded-xl border border-input bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+      
+      <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+        <CardContent className="p-4 flex-1 overflow-y-auto">
+          <Tabs defaultValue="base" className="w-full">
+            {/* Abas Superiores Flutuantes com Cores Ativas */}
+            <TabsList className="grid w-full grid-cols-3 h-10 bg-muted/50 rounded-xl p-1 mb-4 border border-muted/30">
+              <TabsTrigger 
+                value="base" 
+                className="text-xs font-semibold rounded-lg gap-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all duration-200"
               >
-                <option value={MaritalStatus.NAO_CASADO}>Não Casado (Solteiro / Divorciado / Viúvo)</option>
-                <option value={MaritalStatus.CASADO_UNICO_TITULAR}>Casado, Único Titular</option>
-                <option value={MaritalStatus.CASADO_DOIS_TITULARES}>Casado, Dois Titulares</option>
-              </select>
-            </div>
-          </div>
+                <Banknote className="h-3.5 w-3.5" /> Base
+              </TabsTrigger>
+              <TabsTrigger 
+                value="fiscal" 
+                className="text-xs font-semibold rounded-lg gap-1 data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all duration-200"
+              >
+                <ShieldCheck className="h-3.5 w-3.5" /> IRS
+              </TabsTrigger>
+              <TabsTrigger 
+                value="subsidio" 
+                className="text-xs font-semibold rounded-lg gap-1 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-200"
+              >
+                <Wallet className="h-3.5 w-3.5" /> Alim.
+              </TabsTrigger>
+            </TabsList>
 
-          <hr className="border-muted/60" />
-
-          {/* Seção 3: Subsídio de Alimentação */}
-          {/* Seção 3: Subsídio de Alimentação Expandido */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold flex items-center gap-1.5 text-muted-foreground">
-              <Wallet className="h-4 w-4 text-blue-500" /> SUBSÍDIO DE ALIMENTAÇÃO
-            </h3>
-
-            <div className="grid grid-cols-3 gap-2"> {/* Mudado para 3 colunas */}
-              <div className="space-y-2">
-                <Label htmlFor="mealValue" className="text-xs font-semibold">Valor Diário (€)</Label>
+            {/* ABA 1: Configuração Base */}
+            <TabsContent value="base" className="space-y-4 focus-visible:outline-none animate-in fade-in-50 duration-200">
+              <div className="space-y-1.5">
+                <Label htmlFor="baseSalary" className="text-xs font-semibold">Vencimento Base (€)</Label>
                 <Input
-                  id="mealValue"
+                  id="baseSalary"
                   type="number"
                   step="0.01"
-                  value={mealAllowanceValue}
-                  onChange={(e) => setMealAllowanceValue(e.target.value)}
-                  className="h-11 text-sm"
+                  value={baseSalary}
+                  onChange={(e) => setBaseSalary(e.target.value)}
+                  className="h-10 text-sm rounded-xl bg-background/50 focus-visible:ring-indigo-500"
                   required
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="mealDays" className="text-xs font-semibold">Dias a Pagar</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex items-center justify-between rounded-xl border border-muted/60 p-2.5 bg-muted/10">
+                  <div className="space-y-0.5">
+                    <Label className="text-[11px] font-semibold">Sub. Férias</Label>
+                    <p className="text-[9px] text-muted-foreground">Duodécimos</p>
+                  </div>
+                  <Switch checked={hasHoliday} onCheckedChange={setHasHoliday} className="data-[state=checked]:bg-indigo-600" />
+                </div>
+
+                <div className="flex items-center justify-between rounded-xl border border-muted/60 p-2.5 bg-muted/10">
+                  <div className="space-y-0.5">
+                    <Label className="text-[11px] font-semibold">Sub. Natal</Label>
+                    <p className="text-[9px] text-muted-foreground">Duodécimos</p>
+                  </div>
+                  <Switch checked={hasChristmas} onCheckedChange={setHasChristmas} className="data-[state=checked]:bg-indigo-600" />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="gratification" className="text-xs font-semibold">Gratificação de Resultados (€)</Label>
                 <Input
-                  id="mealDays"
+                  id="gratification"
                   type="number"
-                  min="0"
-                  max="31"
-                  value={mealAllowanceDays}
-                  onChange={(e) => setMealAllowanceDays(e.target.value)}
-                  className="h-11 text-sm"
-                  placeholder="Ex: 22"
-                  required
+                  step="0.01"
+                  value={gratification}
+                  onChange={(e) => setGratification(e.target.value)}
+                  className="h-10 text-sm rounded-xl bg-background/50 focus-visible:ring-indigo-500"
+                  placeholder="0.00"
                 />
               </div>
+            </TabsContent>
 
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold">Modo Pagamento</Label>
+            {/* ABA 2: Perfil Fiscal (IRS) */}
+            <TabsContent value="fiscal" className="space-y-4 focus-visible:outline-none animate-in fade-in-50 duration-200">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Região Fiscal</Label>
+                  <select
+                    value={taxRegion}
+                    onChange={(e) => setTaxRegion(e.target.value as TaxRegion)}
+                    className="w-full h-10 px-2 rounded-xl border border-input bg-background/50 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                  >
+                    <option value={TaxRegion.CONTINENTE}>Continente</option>
+                    <option value={TaxRegion.MADEIRA}>Madeira</option>
+                    <option value={TaxRegion.ACORES}>Açores</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="dependentsCount" className="text-xs font-semibold">Dependentes (Filhos)</Label>
+                  <Input
+                    id="dependentsCount"
+                    type="number"
+                    min="0"
+                    value={dependentsCount}
+                    onChange={(e) => setDependentsCount(e.target.value)}
+                    className="h-10 text-sm rounded-xl bg-background/50 focus-visible:ring-emerald-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Estado Civil e Titularidade</Label>
                 <select
-                  value={mealAllowanceType}
-                  onChange={(e) => setMealAllowanceType(e.target.value as MealAllowanceType)}
-                  className="w-full h-11 px-2 rounded-xl border border-input bg-background text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={maritalStatus}
+                  onChange={(e) => setMaritalStatus(e.target.value as MaritalStatus)}
+                  className="w-full h-10 px-2 rounded-xl border border-input bg-background/50 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                 >
-                  <option value={MealAllowanceType.CARTAO}>Cartão (9.60€)</option>
-                  <option value={MealAllowanceType.DINHEIRO}>Dinheiro (6.00€)</option>
+                  <option value={MaritalStatus.NAO_CASADO}>Não Casado (Solteiro / Divorciado)</option>
+                  <option value={MaritalStatus.CASADO_UNICO_TITULAR}>Casado, Único Titular</option>
+                  <option value={MaritalStatus.CASADO_DOIS_TITULARES}>Casado, Dois Titulares</option>
                 </select>
               </div>
-            </div>
-          </div>
+            </TabsContent>
 
+            {/* ABA 3: Subsídio de Alimentação */}
+            <TabsContent value="subsidio" className="space-y-4 focus-visible:outline-none animate-in fade-in-50 duration-200">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="mealValue" className="text-[11px] font-semibold tracking-tight">Valor Diário (€)</Label>
+                  <Input
+                    id="mealValue"
+                    type="number"
+                    step="0.01"
+                    value={mealAllowanceValue}
+                    onChange={(e) => setMealAllowanceValue(e.target.value)}
+                    className="h-10 text-xs px-2 rounded-xl bg-background/50 focus-visible:ring-blue-500"
+                    required
+                  />
+                </div>
 
+                <div className="space-y-1.5">
+                  <Label htmlFor="mealDays" className="text-[11px] font-semibold tracking-tight">Dias a Pagar</Label>
+                  <Input
+                    id="mealDays"
+                    type="number"
+                    min="0"
+                    max="31"
+                    value={mealAllowanceDays}
+                    onChange={(e) => setMealAllowanceDays(e.target.value)}
+                    className="h-10 text-xs px-2 rounded-xl bg-background/50 focus-visible:ring-blue-500"
+                    placeholder="22"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-[11px] font-semibold tracking-tight">Modo Pagamento</Label>
+                  <select
+                    value={mealAllowanceType}
+                    onChange={(e) => setMealAllowanceType(e.target.value as MealAllowanceType)}
+                    className="w-full h-10 px-1 rounded-xl border border-input bg-background/50 text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  >
+                    <option value={MealAllowanceType.CARTAO}>Cartão</option>
+                    <option value={MealAllowanceType.DINHEIRO}>Dinheiro</option>
+                  </select>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+
+        {/* Rodapé Fixo com Botão de Submissão Colorido */}
+        <div className="p-4 bg-indigo-500/[0.02] border-t border-muted/30">
           <Button
             type="submit"
             disabled={saving}
-            className="w-full h-12 text-base font-medium rounded-xl transition-all active:scale-[0.98] mt-2"
+            className="w-full h-11 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md shadow-indigo-500/10 transition-all active:scale-[0.98]"
           >
             {saving ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 A guardar preferências...
               </>
             ) : (
-              "Guardar Configurações Completas"
+              "Guardar Configurações"
             )}
           </Button>
-        </CardContent>
+        </div>
       </form>
     </Card>
   );
 }
+
